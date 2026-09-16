@@ -1,6 +1,6 @@
 # Testing
 
-These rules are for this Raycast extension: stubbed `@raycast/api`, happy-dom for setup UI, fake helper processes, and real macOS `lockf` where the lock itself is the claim.
+Conventions for this extension's Vitest suites. See [Environments](#environments) for what each test project can prove.
 
 ## Shape
 
@@ -70,9 +70,9 @@ Pick the lightest project that can falsify the claim. `npm test` runs all four. 
 
 | Project       | Files                                                             | What it can prove                                                                                                                       |
 | ------------- | ----------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
-| `unit`        | Colocated `src/**/*.test.ts`, excluding `src/test/integration/**` | Node, Raycast and tools stubbed. No real helper processes or OS locks.                                                                  |
+| `unit`        | Colocated `src/**/*.test.ts`, excluding `src/test/integration/**` | Node, Raycast and tools stubbed. No real CLI processes or OS locks.                                                                     |
 | `component`   | `src/**/*.test.tsx`                                               | happy-dom with the Raycast DOM adapter. Action titles, navigation, and React lifecycle. Not native List, Form, or HUD.                  |
-| `integration` | `src/test/integration/**/*.integration.test.ts`                   | Composed modules and temporary helper/supervisor processes. Process fixtures need POSIX shell and bash.                                 |
+| `integration` | `src/test/integration/**/*.integration.test.ts`                   | Composed modules and temporary fake CLI/supervisor processes. Process fixtures need POSIX shell and bash.                               |
 | `macos`       | `src/test/integration/**/*.macos.test.ts`                         | Real `lockf`, file descriptors, revision files, and supervised processes. Every case uses `test.skipIf(process.platform !== "darwin")`. |
 
 Each file belongs to exactly one project. Keep file isolation on. Do not stub `lockf` in the macOS project or cut timeouts to make that suite faster.
@@ -81,7 +81,7 @@ happy-dom cannot prove native Raycast rendering or HUD fallback. Vitest cannot p
 
 ## Stay in process
 
-Use the Raycast mock, local fake binaries, and in-process stubs. Automated tests do not install or upgrade the helper with Homebrew, hit the public internet, change AirPods settings, or open the Raycast window.
+Use the Raycast mock, local fake binaries, and in-process stubs. Automated tests do not install or upgrade the CLI with Homebrew, hit the public internet, change AirPods settings, or open the Raycast window.
 
 ## Commands
 

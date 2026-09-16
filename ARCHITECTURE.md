@@ -1,68 +1,34 @@
 # Architecture
 
-AirPods Control has eight Raycast command entrypoints. Keep those filenames and their manifest identifiers stable. The modules below group implementation by responsibility; none changes the helper's CLI contract.
+AirPods Control has eight Raycast command entrypoints in `src/`. Keep those filenames and their manifest identifiers stable. The folders below group the implementation by responsibility; none of them changes the CLI's contract.
 
 ## Finding the code
 
-| Task                                                  | Start here                                                                                               |
-| ----------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Follow a fixed listening-mode command                 | `src/set-*.ts` → `controls/delegate-listening-mode.ts` → Cycle entrypoint → `controls/listening-mode.ts` |
-| Change cycling or Conversation Awareness logic        | `src/controls/`                                                                                          |
-| Understand a background launch payload                | `src/commands/launch-context.ts`                                                                         |
-| Follow combined status reads and subtitle dispatch    | `src/status/refresh.ts`                                                                                  |
-| Understand subtitle ordering across processes         | `src/subtitles/coordination.ts`                                                                          |
-| Inspect helper arguments and confirmed-state handling | `src/cli/client.ts`                                                                                      |
-| Inspect helper version comparison                     | `src/cli/version.ts`                                                                                     |
-| Inspect executable discovery                          | `src/cli/discovery.ts`                                                                                   |
-| Inspect JSON validation or error classification       | `src/cli/protocol.ts`, `src/cli/errors.ts`, `src/cli/transport.ts`                                       |
-| Change CLI setup screens                              | `src/setup/view.tsx`, `guidance.tsx`, `lifecycle.ts`                                                     |
-| Understand setup detection or installation            | `src/setup/detection.ts`, `installation.ts`                                                              |
-| Understand Homebrew termination and locking           | `src/homebrew/commands.ts`, `lock.ts`, `process-lifetime.ts`                                             |
-| Change state labels or symbols                        | `src/airpods/presentation.ts`                                                                            |
-| Change control toasts or error actions                | `src/feedback/`                                                                                          |
+| Task                                               | Start here                                                                                               |
+| -------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| Follow a fixed listening-mode command              | `src/set-*.ts` → `controls/delegate-listening-mode.ts` → Cycle entrypoint → `controls/listening-mode.ts` |
+| Change cycling or Conversation Awareness logic     | `src/controls/`                                                                                          |
+| Understand a background launch payload             | `src/commands/launch-context.ts`                                                                         |
+| Follow combined status reads and subtitle dispatch | `src/status/refresh.ts`                                                                                  |
+| Understand subtitle ordering across processes      | `src/subtitles/coordination.ts`                                                                          |
+| Inspect CLI arguments and confirmed-state handling | `src/cli/client.ts`                                                                                      |
+| Inspect CLI version comparison                     | `src/cli/version.ts`                                                                                     |
+| Inspect executable discovery and search paths      | `src/cli/discovery.ts`, `src/cli/preferences.ts`                                                         |
+| Inspect JSON validation or error classification    | `src/cli/protocol.ts`, `src/cli/errors.ts`, `src/cli/transport.ts`                                       |
+| Change CLI setup screens or actions                | `src/setup/screens.ts`, `view.tsx`, `lifecycle.ts`                                                       |
+| Understand setup detection or installation         | `src/setup/detection.ts`, `developer-tools.ts`, `latest-release.ts`, `installation.ts`                   |
+| Understand the pre-command CLI check               | `src/setup/guard.ts`, `navigation.ts`                                                                    |
+| Understand Homebrew termination and locking        | `src/homebrew/commands.ts`, `lock.ts`, `process-lifetime.ts`                                             |
+| Change state labels or symbols                     | `src/airpods/presentation.ts`                                                                            |
+| Change control toasts or error actions             | `src/feedback/`                                                                                          |
 
-## Before the refactor
+## Module map
 
-Solid arrows show dependencies. Dashed arrows show Raycast command launches. Shared types, constants, and presentation helpers are omitted for readability.
-
-```mermaid
-flowchart TD
-  Fixed[Four set-mode entrypoints] --> Delegate[core/listening-mode-command]
-  Delegate -. Delegate set .-> Cycle[Cycle entrypoint]
-  Cycle --> Controls[core/airpods-control]
-  Toggle[Toggle entrypoint] --> Controls
-  Delegate --> Controls
-  Cycle --> Status[core/airpods-status-refresh]
-  Toggle --> Status
-  Refresh[Refresh entrypoint] --> Status
-  Controls -. Request refresh .-> Refresh
-  Status -. Publish subtitles .-> Cycle
-  Status -. Publish subtitles .-> Toggle
-  Controls --> Client[core/airpods-control-cli]
-  Status --> Client
-  Client --> CLI[core/cli]
-  Controls --> Metadata[core/command-metadata]
-  Status --> Metadata
-  Delegate --> Guard[core/cli-guard]
-  Cycle --> Guard
-  Toggle --> Guard
-  Refresh --> Guard
-  Guard --> Installation[core/cli-installation]
-  View[Helper entrypoint with lifecycle and UI] --> Installation
-  View --> Setup[core/cli-setup]
-  View --> Content[components/cli-setup-content]
-  Installation --> Setup
-  Setup --> Brew[core/brew]
-  Installation --> Brew
-  Brew --> Lock[core/brew-lock]
-  Brew --> Lifetime[core/process-lifetime]
-```
-
-## Current architecture
+Solid arrows are imports. Dashed arrows are Raycast command launches. Shared types, constants, and presentation helpers are omitted.
 
 ```mermaid
 flowchart TD
-  Entry[Existing Raycast entrypoints] --> Contracts[commands: names and launch contexts]
+  Entry[Raycast entrypoints] --> Contracts[commands: names and launch contexts]
   Entry --> Controls[controls: delegation, set, cycle, toggle]
   Entry --> Status[status: refresh and feedback]
   Entry --> Setup[setup: guard, detection, installation, view]
@@ -88,58 +54,59 @@ flowchart TD
   Client --> Domain
 ```
 
-Raycast metadata updates apply in the executing command's context. Fixed-mode commands therefore delegate to Cycle Listening Mode, and the status command dispatches confirmed values back to the feature commands. Preserve these launches when changing file organization.
+Raycast metadata updates apply in the executing command's context. Fixed-mode commands therefore delegate to Cycle Listening Mode, and the status command dispatches confirmed values back to the feature commands. Preserve these launches when reorganizing files.
 
 ## Dependency rules
 
-- Entrypoints route user and background launches. They can depend on feature modules; feature modules must not import entrypoints.
-- `commands/` owns command identifiers and launch payload validation. It depends only on AirPods state definitions.
-- `airpods/` contains state types and formatting with no Raycast or Node dependencies.
-- `cli/` owns the external helper contract and execution. It never imports setup, control workflows, status, subtitles, or feedback.
-- `subtitles/` can read state through the CLI client and publish metadata. It never imports control or status workflows.
-- `controls/` and `status/` coordinate their own workflows. They communicate through Raycast launches, not direct imports of each other.
+ESLint enforces these boundaries for production code. Keep `eslint.config.js` in sync with this list.
+
+- Entrypoints route user and background launches. They may depend on feature modules; feature modules never import entrypoints.
+- `commands/` owns command identifiers and launch payload validation. It depends only on `airpods/`.
+- `airpods/` holds state types and formatting with no Raycast or Node dependencies.
+- `cli/` owns the external CLI contract and execution. It never imports setup, controls, status, subtitles, or feedback.
+- `subtitles/` reads state through the CLI client and publishes metadata. It never imports controls or status.
+- `controls/` and `status/` coordinate their own workflows and talk to each other only through Raycast launches.
 - `setup/` owns CLI detection, install, update, and recovery. `homebrew/` owns command execution, OS locks, and supervisor cleanup.
 - `feedback/` owns shared Raycast feedback primitives and has no feature dependencies.
-- Production modules never import tests or test helpers. Unit tests stay beside their modules; composed workflows, real-process tests, and macOS lock tests live in `src/test/integration/`. Follow [TESTING.md](TESTING.md) for Given/When/Then, fixture ownership, and suite selection.
+- Production modules never import tests or test helpers. Unit tests sit beside their modules; composed workflows, real-process tests, and macOS lock tests live in `src/test/integration/`.
 
-Use direct imports. Avoid barrel files that hide dependencies and generic workflow abstractions that obscure command-specific behavior. ESLint enforces the folder boundaries for production code.
+Use direct imports. Avoid barrel files and generic workflow abstractions that hide command-specific behavior.
 
 ## Behavior contracts
 
-These rules describe existing behavior. A future change to any rule needs its own behavior review.
+These describe existing behavior. Changing any of them needs its own behavior review.
 
-- Fixed-mode delegation retains its guarded fallback. Setup belongs to the originating command, and successful installation never resumes the original AirPods action.
-- CLI writes use confirmed readback. A no-op that confirms the requested state is accepted by the client. Preserve invalid-envelope checks and process-failure precedence.
-- Custom CLI paths override automatic discovery, including when invalid. Preserve search order, arguments, timeouts, buffer limits, and bounded diagnostics.
-- Invalid or legacy background contexts without a usable revision trigger a fresh read. A valid context can carry an explicit null state. User-initiated invalid contexts retain their existing error handling.
-- Control operations and status snapshots use the global operation lock. Feature operations also take their channel lock. Metadata writes compare durable revisions under the metadata lock.
+**Commands and delegation**
+
+- Fixed-mode delegation keeps its guarded fallback. Setup belongs to the originating command, and a successful installation never resumes the original AirPods action.
+- Invalid or legacy background contexts without a usable revision trigger a fresh read. A valid context may carry an explicit null state. User-initiated invalid contexts keep their existing error handling.
+- Background commands stay silent, never start an installation, and never change an AirPods setting.
+- Preserve command identifiers, preference keys, visible messages, action ordering, shortcuts, and CLI version references during structural maintenance.
+
+**CLI client**
+
+- Writes use confirmed readback. A no-op that confirms the requested state is accepted. Preserve invalid-envelope checks and process-failure precedence.
+- A custom CLI path overrides automatic discovery, including when it is invalid. Preserve search order, arguments, timeouts, buffer limits, and bounded diagnostics.
+
+**Locks and subtitles**
+
+- Control operations and status snapshots take the global operation lock. Feature operations also take their channel lock. Metadata writes compare durable revisions under the metadata lock.
 - Preserve lock filenames, revision JSON keys, lock acquisition order, and atomic revision writes. A delayed publication must not overwrite a newer operation.
-- A control command requests status refresh after releasing its operation lock, including after a failed CLI action. A lock acquisition failure does not run the CLI.
-- The combined subtitle preserves its last confirmed value on transient or malformed total reads. Disconnection, unavailable controls, and partial reads retain their separate outcomes. Individual feature subtitles can reset independently.
-- Background commands stay silent, do not initiate installation, and never change AirPods settings.
-- Setup detection precedence, persistent completion and error screens, cancellation guards, and in-process pending promises remain unchanged.
-- Helper setup offers Homebrew or manual updates when the live latest is newer than the install, when the latest check fails, or when the installed helper is below `MIN_CLI_VERSION`. Latest versions come only from Homebrew (`brew info`) or GitHub (`releases/latest`); `MIN_CLI_VERSION` is a compatibility floor, not a latest source, URL pin, or install-command pin. The copied source-install command resolves `releases/latest` so the installer tag matches the installed release. User-facing docs follow GitHub `HEAD`. An up-to-date helper that meets the minimum shows status without an update or install-docs action. Homebrew install help is only for a missing Homebrew install. Helper install or update docs follow the current setup state. The source-install copy is only for a manual helper that needs an update. Latest Homebrew versions come from the local tap without running `brew update`.
-- When Homebrew owns the formula but discovery finds no CLI, setup diagnoses the gap before recommending a command. A keg without a usable executable needs a reinstall, since linking cannot create a missing binary. A usable keg executable needs a link, and Homebrew's own `linked_keg` status chooses between `brew link` and `brew link --overwrite`. An unreadable link status keeps the plain link command. The keg executable is diagnostic only; it never joins `CLI_SEARCH_PATHS`. Homebrew is asked for its link status only on that path, so a healthy install adds no `brew info` call.
-- Homebrew retains its OS lock until descendant cleanup finishes, including timeout escalation and parent termination. The CLI transport and Homebrew supervisor have different lifetimes; keep their execution mechanisms separate.
-- Preserve command identifiers, preference keys, visible messages, action ordering, shortcuts, and helper version references during structural maintenance.
+- A control command requests a status refresh after releasing its operation lock, including after a failed CLI action. A lock acquisition failure does not run the CLI.
+- The combined subtitle keeps its last confirmed value on transient or malformed total reads. Disconnection, unavailable controls, and partial reads keep their separate outcomes. Feature subtitles can reset independently.
+
+**Setup and updates**
+
+- Setup detection precedence, persistent completion and error screens, cancellation guards, and in-process pending promises stay unchanged.
+- An update is offered when the latest release is newer than the installed CLI, when the latest check fails, or when the installed CLI is below `MIN_CLI_VERSION`. `MIN_CLI_VERSION` is a compatibility floor only; latest versions come from Homebrew (`brew info`, local tap, no `brew update`) or GitHub (`releases/latest`). The copied source-install command resolves `releases/latest`. User-facing docs link GitHub `HEAD`.
+- Actions follow the current setup state: Homebrew install help only when Homebrew is missing, the source-install copy only for a manual CLI that needs an update, and no update or install-docs action on an up-to-date CLI.
+- When Homebrew owns the formula but discovery finds no CLI, setup diagnoses before recommending: a keg without a usable executable gets `brew reinstall`; a usable keg executable gets `brew link`, or `brew link --overwrite` when Homebrew's `linked_keg` says it is already linked; an unreadable link status keeps the plain link. The keg path is diagnostic only and never joins `CLI_SEARCH_PATHS`. Homebrew is asked for link status only on this path.
+
+**Homebrew processes**
+
+- Homebrew holds its OS lock until descendant cleanup finishes, including timeout escalation and parent termination.
+- The CLI transport and the Homebrew supervisor have different lifetimes; keep their execution mechanisms separate.
 
 ## Verification
 
-Run from the extension directory:
-
-```sh
-npm test
-npm run test:unit
-npm run test:integration
-npm run type-check
-npx --no-install prettier --check src .prettierrc eslint.config.js package.json tsconfig.json vitest.config.ts
-npm run lint
-npm run build
-npm run test:coverage
-```
-
-Vitest separates unit, component, portable integration, and macOS integration projects. Every macOS integration case skips explicitly on other platforms. Each resource-owning test creates and removes its own temporary support directory.
-
-The tests cover manifest entrypoints, launch contexts, helper transport and state validation, subtitle ordering, setup transitions, feedback, and Homebrew process ownership. Transport integration tests use temporary fake helpers. The macOS lock tests run real `lockf` and supervised fixture processes. They do not run Homebrew installation or AirPods operations.
-
-Raycast and hardware checks remain separate from those tests. For runtime validation, exercise foreground and background launches, fixed-mode delegation and fallback, toast/HUD completion with the window open and closed, and setup loading/error/refresh states. Confirm the extension is running the intended distribution build. Use compatible connected hardware for device-operation checks.
+See [TESTING.md](TESTING.md) for the test projects, conventions, and the full command list. Raycast rendering, HUD fallback, Homebrew installation, and AirPods hardware are not covered by automated tests; check those manually against a distribution build with compatible hardware connected.

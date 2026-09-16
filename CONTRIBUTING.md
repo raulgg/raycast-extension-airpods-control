@@ -24,7 +24,7 @@ The maintainer keeps the two in sync. You may be reading this file from either o
 
 Please open an issue in the [AirPods Control Raycast extension repository](https://github.com/raulgg/raycast-extension-airpods-control/issues) before building a new feature or changing behavior. Small bug fixes do not need one.
 
-Why: Raycast will not merge significant changes to an extension without the author's sign-off, so agreeing on the idea first means your pull request will not stall in review. It also settles whether the change belongs in the extension or in the [airpods-control CLI](https://github.com/raulgg/airpods-control), and lets the maintainer point you at the relevant notes in `ARCHITECTURE.md` and `TESTING.md` before you start.
+Why: Raycast will not merge significant changes to an extension without the author's sign-off, so agreeing on the idea first means your pull request will not stall in review. It also settles whether the change belongs in the extension or in the [airpods-control CLI](https://github.com/raulgg/airpods-control), and lets the maintainer point you at the relevant notes in [ARCHITECTURE.md](ARCHITECTURE.md) and [TESTING.md](TESTING.md) before you start.
 
 You can also open issues in the Raycast extensions repository (Raycast labels them per extension), but the AirPods Control Raycast extension repository is preferred so discussions stay in one place.
 
@@ -38,7 +38,9 @@ You are not required to open your pull request in the AirPods Control Raycast ex
 
 In both repositories:
 
-- Update `CHANGELOG.md` with a `## [Title] - {PR_MERGE_DATE}` entry. Raycast fills in the date on release.
+- `npm run dev` loads the AirPods Control Raycast extension into Raycast from the directory you run it in and reloads on changes. You need macOS, Raycast, and the [airpods-control](https://github.com/raulgg/airpods-control) CLI installed to exercise the commands end to end.
+- Read [ARCHITECTURE.md](ARCHITECTURE.md) for the module map, dependency rules, and the behavior contracts a change must preserve, and [TESTING.md](TESTING.md) for the test projects, conventions, and what each suite can prove. Both files ship alongside this one in either repository.
+- Update [CHANGELOG.md](CHANGELOG.md) with a `## [Title] - {PR_MERGE_DATE}` entry. Raycast fills in the date on release.
 - Add your Raycast Store handle to `contributors` in `package.json`. This is the credit shown on the Store page, and it makes you a code owner for future changes.
 - Say what you tested on real hardware (AirPods or Beats model, macOS version, CLI version). Automated tests stub Raycast, the CLI, and Homebrew, so they cannot prove device behavior.
 - Run the checks before opening the pull request:
@@ -66,4 +68,4 @@ For the maintainer, and for anyone curious why both paths are safe.
 - Keep command names, entrypoint filenames, and preference keys stable; users have shortcuts and settings bound to them.
 - Raycast's [Store guidelines](https://developers.raycast.com/basics/prepare-an-extension-for-store) and [Community Guidelines](https://manual.raycast.com/community-guidelines) apply to every change, in either repository.
 
-Contributions are licensed under the [MIT License](https://github.com/raulgg/raycast-extension-airpods-control/blob/main/LICENSE), like the rest of the project.
+Contributions are licensed under the [MIT License](LICENSE), like the rest of the project.
