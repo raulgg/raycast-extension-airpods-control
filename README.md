@@ -83,6 +83,8 @@ If controls are unavailable, the combined subtitle falls back to **AirPods**. Tr
 
 ## Developer verification
 
+This repository (`raulgg/raycast-extension-airpods-control`) is the source of truth. Develop here with `npm run dev` from this directory, not from a copy inside `raycast/extensions`. Do not publish to the Raycast Store while the extension is in active local development. The frozen backup of this history is `airpods-control/add-extension` on `raulgg/raycast-extensions`.
+
 See [Architecture](ARCHITECTURE.md) for the module map, command flows, dependency rules, and behavior contracts.
 
 Run `npm test`, `npm run type-check`, `npm run lint`, `npm run build`, and `npm run test:coverage` to verify CLI envelope and state validation, bounded process diagnostics, subtitle freshness ordering, setup lifecycle transitions, real temporary-helper transport cases, and fixed listening-mode entrypoint dispatch. Coverage includes runtime TypeScript and TSX while excluding tests, types, configuration, and mocks.

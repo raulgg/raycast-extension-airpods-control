@@ -14,5 +14,10 @@ compiled_raycast_rust
 .env
 .env.local
 
+# local working notes and editor state (not part of the extension)
+/plans/
+.claude/
+.cursor/
+
 # misc
 .DS_Store
