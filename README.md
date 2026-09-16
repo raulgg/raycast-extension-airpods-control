@@ -68,7 +68,3 @@ Check the compatibility matrix and update the CLI from **Manage AirPods Control 
 ## Privacy and security
 
 The extension only runs the CLI locally and collects no analytics. The CLI uses private macOS audio interfaces together with a companion library that adjusts an entitlement check inside its own process; it does not need Accessibility permission or elevated privileges, but Apple can change these interfaces in any macOS update. Read the CLI's [security and trust model](https://github.com/raulgg/airpods-control/blob/HEAD/SECURITY.md) before installing. The CLI keeps a small local cache, described in its [reference](https://github.com/raulgg/airpods-control/blob/HEAD/docs/cli.md#cached-allow-off-availability).
-
-## Contributing
-
-See [ARCHITECTURE.md](ARCHITECTURE.md) for the module map and behavior contracts, and [TESTING.md](TESTING.md) for how to run and write tests.
