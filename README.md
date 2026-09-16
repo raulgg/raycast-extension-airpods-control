@@ -1,92 +1,70 @@
 # AirPods Control
 
-Control your AirPods from Raycast: switch listening modes (Noise Cancellation, Transparency, Adaptive, or Off) and toggle Conversation Awareness.
+Switch your AirPods between Noise Cancellation, Transparency, Adaptive, and Off, and toggle Conversation Awareness, without leaving Raycast. Command subtitles show the current state as confirmed by macOS.
 
-## Requirements
+The extension drives the open-source [airpods-control](https://github.com/raulgg/airpods-control) CLI. It runs on macOS only. Beats headphones that expose these controls in macOS may also work; see the CLI's [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md) for tested models.
 
-The commands require macOS, compatible AirPods connected over Bluetooth, and the [airpods-control](https://github.com/raulgg/airpods-control) CLI. The CLI is developed and tested upstream on macOS Tahoe 26. Support depends on your model, firmware, and macOS version; see its [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md).
+## Setup
 
-The CLI compiles locally on your Mac. Homebrew is the recommended installation method, but you can also install it from source. Install Apple's Command Line Tools first if they are missing:
+1. Install the CLI with [Homebrew](https://brew.sh). It builds from source, so this can take a few minutes. If Homebrew reports that Apple's Command Line Tools are missing, run `xcode-select --install` first.
 
-```bash
-xcode-select --install
-```
+   ```bash
+   brew install raulgg/tap/airpods-control
+   ```
 
-### Homebrew (recommended)
+   You can also skip this step: run any AirPods command and accept **Install with Homebrew** when prompted.
 
-Install [Homebrew](https://brew.sh) if needed, then install the CLI:
+2. Connect your AirPods and select them as your Mac's audio output.
+3. Run an AirPods command.
 
-```bash
-brew install raulgg/tap/airpods-control
-```
+The extension needs CLI 0.4.0 or later and looks for it in `/opt/homebrew/bin` and `/usr/local/bin`. **Manage AirPods Control CLI** shows the installed version and offers **Update with Homebrew** when a newer release is available.
 
-### Install without Homebrew
-
-If you do not use Homebrew, follow the CLI's [installation instructions](https://github.com/raulgg/airpods-control/blob/HEAD/README.md#install). **Manage AirPods Control CLI** opens those instructions. For an existing source installation, use the same installation method and location when updating it. After a manual installation, return to Raycast and choose the **Refresh** action, then run an AirPods command again.
-
-If the CLI is missing, control commands check setup before offering installation:
-
-- With Homebrew and working developer tools, accept **Install with Homebrew** in the confirmation alert. Homebrew can take several minutes; keep Raycast open to see the progress toast.
-- Without Homebrew, **Manage AirPods Control CLI** opens [Homebrew's official installation instructions](https://brew.sh). Follow those instructions, return to Raycast, and choose the **Refresh** action. Then choose **Install with Homebrew**.
-- Without working developer tools, **Manage AirPods Control CLI** opens [Apple's Command Line Tools installation instructions](https://developer.apple.com/documentation/xcode/installing-the-command-line-tools). Follow those instructions, return to Raycast, and choose the **Refresh** action.
-
-After installation, run an AirPods command again. Setup never changes an AirPods setting or resumes the original action. The setup view keeps its progress, success, or error message visible until you leave or check again. Concurrent Homebrew installations are prevented across command launches.
-
-Raycast detects the CLI automatically. For another location, set the full binary path in **CLI Path**. A custom path overrides automatic detection. An invalid custom path opens recovery instructions before attempting installation.
-
-This extension requires CLI 0.4.0 or later. **Manage AirPods Control CLI** shows the installed CLI version and whether it was installed with Homebrew or manually. It offers an update when Homebrew or GitHub reports a newer version, when the latest check fails, or when the installed CLI is below that minimum. For a Homebrew update, choose **Update with Homebrew**, or **Copy Update Command** to run the upgrade in Terminal. For a manual update, choose **Copy Source Install Command**, use the same installation method and location, then return to Raycast and choose the **Refresh** action. When the CLI is missing and prerequisites are ready, choose the **Install with Homebrew** action to install it directly.
-
-To check or upgrade your installation in Terminal:
-
-```bash
-airpods-control --version
-brew update
-brew upgrade raulgg/tap/airpods-control
-```
-
-Keep the complete CLI installation, including `avbypass.dylib`; copying only the executable is insufficient. Detection confirms an executable exists, not that your device supports every command.
-
-## Compatibility and privacy
-
-The CLI uses private macOS audio interfaces and a companion library that adjusts an entitlement check inside its own process. It does not require Accessibility permission or elevate privileges. Apple can change these interfaces in a macOS update. Review the CLI's [security and trust model](https://github.com/raulgg/airpods-control/blob/HEAD/SECURITY.md) before installing.
-
-Status and successful changes reflect macOS provider readback, not a direct acknowledgment from the AirPods. The extension runs local CLI commands and has no analytics. Homebrew downloads source during installation. The CLI has its own local cache behavior, documented in its [reference](https://github.com/raulgg/airpods-control/blob/HEAD/docs/cli.md#cached-allow-off-availability).
+**Installing without Homebrew.** Follow the CLI's [installation instructions](https://github.com/raulgg/airpods-control/blob/HEAD/README.md#install) and keep the complete installation together, including `avbypass.dylib`. If the binary is outside the standard locations, set its full path in the **CLI Path** preference.
 
 ## Commands
 
-Control commands keep Raycast open and show a confirmation toast. If Raycast is closed when the command finishes, including when launched by a keyboard shortcut with the window closed, the confirmation appears in a HUD instead.
+| Command                           | What it does                                                                                                                                    |
+| --------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------- |
+| **Set to Noise Cancellation**     | Switch to Noise Cancellation.                                                                                                                   |
+| **Set to Transparency**           | Switch to Transparency.                                                                                                                         |
+| **Set to Adaptive**               | Switch to Adaptive. Disabled by default; requires a model that supports it.                                                                     |
+| **Set to Off**                    | Turn noise control off. Disabled by default; requires Off to be enabled in your AirPods settings.                                               |
+| **Cycle Listening Mode**          | Step through the modes selected in its preferences. Unsupported modes are skipped.                                                              |
+| **Toggle Conversation Awareness** | Turn Conversation Awareness on or off. Requires a model that supports it.                                                                       |
+| **Refresh AirPods Status**        | Read the current mode and Conversation Awareness state. Run it once to activate Background Refresh, which keeps subtitles current every minute. |
+| **Manage AirPods Control CLI**    | Install, update, or repair the CLI. Each screen explains the next step and offers the matching action.                                          |
 
-- **Set to Noise Cancellation / Set to Transparency / Set to Adaptive / Set to Off**. Set a specific listening mode. After macOS confirms the change, the **Cycle Listening Mode** subtitle updates to that mode.
-- **Cycle Listening Mode**. Cycle through modes selected in command preferences; select at least two modes. Its subtitle updates after macOS confirms the new mode.
-- **Toggle Conversation Awareness**. Read the current state and flip it. Its subtitle updates after macOS confirms the new state.
-- **Refresh AirPods Status**. Read both states, show the confirmed values in its combined subtitle, and update the feature subtitles immediately and, when Background Refresh is active, about once a minute. Manual refreshes keep Raycast open and show the states read from macOS. Failed subtitle refresh requests are reported.
-- **Manage AirPods Control CLI**. Install, update, or recover the CLI. It reports the installed version and installation method. It offers an update when Homebrew or GitHub reports a newer version, when the latest check fails, or when the installed CLI is below the required minimum. Unlinked Homebrew installations and invalid CLI paths get specific recovery steps. When Homebrew has the formula but Raycast cannot run the CLI, it reports the CLI's location inside the keg and Homebrew's link status: an unlinked formula gets `brew link`, an already-linked formula gets `brew link --overwrite`, and a keg without a usable binary gets `brew reinstall`. Run an AirPods command again after an install or update.
+Control commands show a success toast while Raycast is open and a HUD when it is closed, for example when triggered by a hotkey. Subtitles update after macOS confirms the change; if no AirPods are connected, **Refresh AirPods Status** shows **Not connected**.
 
-## Status Refresh
+## Preferences
 
-The listening-mode, Conversation Awareness, and status-refresh commands always run against the real CLI. The **Refresh AirPods Status** subtitle combines the confirmed states in a compact format. Only available values are shown. After a control action finishes, the extension requests a background status refresh so the subtitles reflect the confirmed outcome without waiting for the next scheduled refresh. If the status command is disabled, this request cannot run.
-
-Run **Refresh AirPods Status** once to activate its shared Background Refresh schedule, which also detects changes made outside the extension. Raycast schedules it approximately rather than at an exact time and lets you deactivate it from the command's Action Panel or preferences.
-
-When the CLI reports no connected device and neither setting can be read, **Refresh AirPods Status** shows **Not connected**. A manual refresh also asks you to connect your AirPods. After reconnection, the next successful refresh restores the listening mode and Conversation Awareness readings. Wearing and case states are not shown.
-
-If controls are unavailable, the combined subtitle falls back to **AirPods**. Transient or malformed reads preserve its last confirmed value, and partial reads show only the available setting. The individual control subtitles fall back to **AirPods** when their setting cannot be read. If a subtitle update cannot run, its previous value can remain visible. Background reads are silent and never change an AirPods setting. If you deactivate Background Refresh, the last confirmed subtitles remain visible until another refresh or control command updates them.
+| Preference                 | Command              | Description                                                                                                           |
+| -------------------------- | -------------------- | --------------------------------------------------------------------------------------------------------------------- |
+| **CLI Path**               | Extension            | Full path to the `airpods-control` binary. Leave empty for automatic detection. A set path overrides detection.       |
+| **Modes to Cycle Through** | Cycle Listening Mode | Checkboxes for Noise Cancellation, Transparency, Adaptive, and Off. Select at least two. Off is unchecked by default. |
 
 ## Troubleshooting
 
-- If the CLI cannot be found after installation, clear an old **CLI Path** or correct it, then run your command again.
-- If no device is available, connect your AirPods and select them as the Mac's audio output. Conversation Awareness requires a compatible selected output interface.
-- If several compatible devices are connected and the CLI cannot select one, disconnect the others. This extension does not expose the CLI's device selector.
-- Adaptive and Conversation Awareness require model support. Enable **Set to Adaptive** in Raycast preferences if you want that command; it is disabled by default.
-- Off can be unavailable because of your device's noise-control settings. Enable it in the AirPods settings if supported, or leave it out of your cycle selection. The **Set to Off** command is disabled by default.
-- If commands fail after a macOS update, check the CLI compatibility matrix and upgrade the CLI. A successful installation alone does not establish hardware compatibility.
+### "CLI not found" after installing
 
-## Developer verification
+Open **Manage AirPods Control CLI**. It detects unlinked or incomplete Homebrew installs and an invalid **CLI Path**, and gives you the exact command or preference to fix. After following the steps, choose **Refresh** in that view and run your command again.
 
-This repository (`raulgg/raycast-extension-airpods-control`) is the source of truth. Develop here with `npm run dev` from this directory, not from a copy inside `raycast/extensions`. Do not publish to the Raycast Store while the extension is in active local development. The frozen backup of this history is `airpods-control/add-extension` on `raulgg/raycast-extensions`.
+### "Not connected"
 
-See [Architecture](ARCHITECTURE.md) for the module map, command flows, dependency rules, and behavior contracts.
+Connect your AirPods and select them as the Mac's audio output. If several compatible devices are connected, disconnect the others; the extension does not choose between devices.
 
-Run `npm test`, `npm run type-check`, `npm run lint`, `npm run build`, and `npm run test:coverage` to verify CLI envelope and state validation, bounded process diagnostics, subtitle freshness ordering, setup lifecycle transitions, real temporary-helper transport cases, and fixed listening-mode entrypoint dispatch. Coverage includes runtime TypeScript and TSX while excluding tests, types, configuration, and mocks.
+### Adaptive or Conversation Awareness is unavailable
 
-The transport tests use real child processes and temporary files, but do not invoke AirPods commands or validate Homebrew, private macOS APIs, installed helper runtime behavior, or hardware.
+Both depend on your AirPods model and firmware. Check the [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md). **Set to Adaptive** is disabled by default; enable it in Raycast's extension settings if your model supports it.
+
+### Off is unavailable
+
+macOS lets you exclude Off from noise control. Enable it in your AirPods settings, or leave Off out of **Modes to Cycle Through**.
+
+### Commands stopped working after a macOS update
+
+Check the compatibility matrix and update the CLI from **Manage AirPods Control CLI** or with `brew upgrade raulgg/tap/airpods-control`. A successful install does not by itself mean your device is supported.
+
+## Privacy and security
+
+The extension only runs the CLI locally and collects no analytics. The CLI uses private macOS audio interfaces together with a companion library that adjusts an entitlement check inside its own process; it does not need Accessibility permission or elevated privileges, but Apple can change these interfaces in any macOS update. Read the CLI's [security and trust model](https://github.com/raulgg/airpods-control/blob/HEAD/SECURITY.md) before installing. The CLI keeps a small local cache, described in its [reference](https://github.com/raulgg/airpods-control/blob/HEAD/docs/cli.md#cached-allow-off-availability).
