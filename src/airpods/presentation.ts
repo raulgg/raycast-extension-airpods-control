@@ -1,4 +1,4 @@
-import type { AirPodsStatusSnapshot, ConversationAwarenessState, ListeningModes } from "./types";
+import type { StatusSnapshot, ConversationAwarenessState, ListeningModes } from "./types";
 
 interface StatePresentation {
   label: string;
@@ -39,7 +39,7 @@ export function conversationAwarenessHud(state: ConversationAwarenessState): str
   return `Conversation Awareness ${label} ${symbol}`;
 }
 
-export function formatAirPodsStatusSubtitle(status: AirPodsStatusSnapshot): string | null {
+export function formatStatusSubtitle(status: StatusSnapshot): string | null {
   const parts: string[] = [];
 
   if (status.listeningMode) {

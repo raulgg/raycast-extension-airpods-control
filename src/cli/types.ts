@@ -21,7 +21,7 @@ export interface CliInterruptedPayload {
 }
 
 /**
- * Structured output emitted by the airpods-control CLI with `--json`.
+ * Structured output emitted by the pods-control CLI with `--json`.
  * Command-specific state fields are null when unavailable or on errors.
  */
 export type CliPayload = CliResourcePayload | CliInterruptedPayload;

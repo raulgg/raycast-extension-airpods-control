@@ -11,9 +11,9 @@ const mockShowHUD = vi.mocked(showHUD);
 const mockShowToast = vi.mocked(showToast);
 
 const titles: ToastTitles = {
-  loading: "Setting AirPods to Transparency...",
+  loading: "Setting to Transparency...",
   success: "Set to Transparency ○",
-  failure: "Failed to set AirPods to Transparency",
+  failure: "Failed to set Transparency",
 };
 
 function makeMockToast(overrides: Partial<Toast> = {}) {
@@ -205,12 +205,12 @@ test("updates the progress toast in place and keeps it visible", async () => {
   await manager.setToLoading();
   vi.clearAllMocks();
   await expect(
-    manager.setToFailure({ titleOverride: "AirPods not connected", error: new Error("Connect them") }),
+    manager.setToFailure({ titleOverride: "Not connected", error: new Error("Connect them") }),
   ).resolves.toBe(manager);
   // Then
   expect(mockShowToast).not.toHaveBeenCalled();
   expect(mockToast.style).toBe(Toast.Style.Failure);
-  expect(mockToast.title).toBe("AirPods not connected");
+  expect(mockToast.title).toBe("Not connected");
   expect(mockToast.message).toBe("Connect them");
   expect(mockToast.primaryAction).toEqual(
     expect.objectContaining({ title: "Copy Error", shortcut: Keyboard.Shortcut.Common.Copy }),

@@ -1,6 +1,6 @@
 import { getPreferenceValues, launchCommand, LaunchType, openCommandPreferences } from "@raycast/api";
 import { expect, vi, test } from "vitest";
-import * as AirPodsControlCli from "../../cli/client";
+import * as PodsControlCli from "../../cli/client";
 import { CliError } from "../../cli/errors";
 import { runToggleConversationAwarenessCommand } from "../../controls/conversation-awareness";
 import { runCycleListeningModeCommand, runSetListeningModeCommand } from "../../controls/listening-mode";
@@ -11,7 +11,7 @@ import { expectConsoleError } from "../console";
 import type { CycleCommandPreferences } from "../../controls/preferences";
 
 vi.mock("../../cli/client", async (importOriginal) => ({
-  ...(await importOriginal<typeof AirPodsControlCli>()),
+  ...(await importOriginal<typeof PodsControlCli>()),
   cycleListeningMode: vi.fn(),
   getConversationAwareness: vi.fn(),
   getListeningMode: vi.fn(),
@@ -63,11 +63,11 @@ test.each([
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   let locked = false;
   vi.mocked(withSubtitleOperation).mockImplementationOnce(async (_channel, operation) => {
     locked = true;
@@ -85,7 +85,7 @@ test.each([
   await run();
   // Then
   expect(launchCommand).toHaveBeenCalledExactlyOnceWith({
-    name: "refresh-airpods-status",
+    name: "pods-status",
     type: LaunchType.Background,
   });
 });
@@ -102,12 +102,12 @@ test("requests reconciliation after a failed control attempt", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.setListeningMode).mockRejectedValueOnce(new CliError("no-device"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockRejectedValueOnce(new CliError("no-device"));
   // When
   await runSetListeningModeCommand("adaptive", { updateCycleSubtitle: true });
   // Then
@@ -127,13 +127,13 @@ test("preserves control success when the status command is disabled", async () =
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   const error = new Error("command disabled");
-  expectConsoleError("Failed to launch AirPods status refresh after control action", error);
+  expectConsoleError("Failed to launch Pods Status after control action", error);
   vi.mocked(launchCommand).mockRejectedValueOnce(error);
   // When
   const result = runSetListeningModeCommand("adaptive", { updateCycleSubtitle: true });
@@ -155,16 +155,16 @@ test("does not launch a refresh when the control lock cannot be acquired", async
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   vi.mocked(withSubtitleOperation).mockRejectedValueOnce(new Error("lock unavailable"));
   // When
   await runSetListeningModeCommand("adaptive", { updateCycleSubtitle: true });
   // Then
-  expect(AirPodsControlCli.setListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.setListeningMode).not.toHaveBeenCalled();
   expect(launchCommand).not.toHaveBeenCalled();
 });
 
@@ -180,11 +180,11 @@ test("does not launch another refresh from subtitle-only background reads", asyn
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   await refreshListeningModeSubtitle();
   await refreshConversationAwarenessSubtitle();
@@ -204,22 +204,22 @@ test("publishes the current listening mode without changing it or showing feedba
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
   // When
   await refreshListeningModeSubtitle();
   // Then
-  expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce();
+  expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce();
   expect(mockPublishCommandSubtitle).toHaveBeenCalledWith("Noise Cancellation ●", {
     channel: "listening-mode",
     revision: "test-revision",
   });
-  expect(AirPodsControlCli.cycleListeningMode).not.toHaveBeenCalled();
-  expect(AirPodsControlCli.setListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.cycleListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.setListeningMode).not.toHaveBeenCalled();
   expect(mockToastManager).not.toHaveBeenCalled();
 });
 
@@ -235,12 +235,12 @@ test("restores AirPods when the listening mode cannot be read", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
   // When
   const result = refreshListeningModeSubtitle();
   // Then
@@ -262,21 +262,21 @@ test("publishes the current Conversation Awareness state without changing it or 
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
   // When
   await refreshConversationAwarenessSubtitle();
   // Then
-  expect(AirPodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
+  expect(PodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
   expect(mockPublishCommandSubtitle).toHaveBeenCalledWith("Off ○̸", {
     channel: "conversation-awareness",
     revision: "test-revision",
   });
-  expect(AirPodsControlCli.setConversationAwareness).not.toHaveBeenCalled();
+  expect(PodsControlCli.setConversationAwareness).not.toHaveBeenCalled();
   expect(mockToastManager).not.toHaveBeenCalled();
 });
 
@@ -292,12 +292,12 @@ test("restores AirPods when Conversation Awareness cannot be read", async () => 
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
   // When
   const result = refreshConversationAwarenessSubtitle();
   // Then
@@ -319,21 +319,21 @@ test("publishes the confirmed mode after setting it", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
   // When
   await runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
   // Then
-  expect(AirPodsControlCli.setListeningMode).toHaveBeenCalledWith("anc");
+  expect(PodsControlCli.setListeningMode).toHaveBeenCalledWith("anc");
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Noise Cancellation ●", {
     channel: "listening-mode",
     revision: "test-revision",
   });
-  expect(vi.mocked(AirPodsControlCli.setListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
+  expect(vi.mocked(PodsControlCli.setListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
     mockPublishCommandSubtitle.mock.invocationCallOrder[0],
   );
   expect(toast.setToSuccess).toHaveBeenCalledWith({ titleOverride: "Set to Noise Cancellation ●" });
@@ -351,11 +351,11 @@ test("does not update the fixed command subtitle in the disabled-Cycle fallback"
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   await runSetListeningModeCommand("transparency", { updateCycleSubtitle: false });
   // Then
@@ -375,18 +375,18 @@ test("publishes a confirmed remaining state from a failed change", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   const error = new CliError("no-op", {
     result: "error",
     device: "My AirPods Pro",
     listeningMode: "transparency",
   });
-  vi.mocked(AirPodsControlCli.setListeningMode).mockRejectedValue(error);
+  vi.mocked(PodsControlCli.setListeningMode).mockRejectedValue(error);
   await runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
   // Then
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Transparency ○", {
@@ -409,12 +409,12 @@ test("keeps the Off-specific failure guidance", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.setListeningMode).mockRejectedValue(new CliError("no-op"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockRejectedValue(new CliError("no-op"));
   // When
   await runSetListeningModeCommand("off", { updateCycleSubtitle: true });
   // Then
@@ -438,12 +438,12 @@ test("restores AirPods after an unexpected failure", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.setListeningMode).mockRejectedValue(new Error("unexpected"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockRejectedValue(new Error("unexpected"));
   // When
   await runSetListeningModeCommand("adaptive", { updateCycleSubtitle: true });
   // Then
@@ -463,22 +463,22 @@ test("publishes the confirmed mode after cycling", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("adaptive");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("adaptive");
   // When
   await runCycleListeningModeCommand();
   // Then
-  expect(AirPodsControlCli.getListeningMode).not.toHaveBeenCalled();
-  expect(AirPodsControlCli.cycleListeningMode).toHaveBeenCalledWith(["transparency", "adaptive", "anc"]);
+  expect(PodsControlCli.getListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.cycleListeningMode).toHaveBeenCalledWith(["transparency", "adaptive", "anc"]);
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Adaptive ◑", {
     channel: "listening-mode",
     revision: "test-revision",
   });
-  expect(vi.mocked(AirPodsControlCli.cycleListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
+  expect(vi.mocked(PodsControlCli.cycleListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
     mockPublishCommandSubtitle.mock.invocationCallOrder[0],
   );
   expect(toast.setToSuccess).toHaveBeenCalledWith({
@@ -501,17 +501,17 @@ test.each([
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   mockGetPreferenceValues.mockReturnValue(preferences as never);
   // When
   await runCycleListeningModeCommand();
   // Then
-  expect(AirPodsControlCli.getListeningMode).not.toHaveBeenCalled();
-  expect(AirPodsControlCli.cycleListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.getListeningMode).not.toHaveBeenCalled();
+  expect(PodsControlCli.cycleListeningMode).not.toHaveBeenCalled();
   expect(mockPublishCommandSubtitle).not.toHaveBeenCalled();
   expect(mockResetCommandSubtitle).not.toHaveBeenCalled();
   expect(toast.setToFailure).toHaveBeenCalledWith({
@@ -536,22 +536,22 @@ test("passes the selected modes to the CLI in canonical order", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   mockGetPreferenceValues.mockReturnValue({
     cycleOff: false,
     cycleTransparency: true,
     cycleAdaptive: false,
     cycleAnc: true,
   } as never);
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("anc");
   // When
   await runCycleListeningModeCommand();
   // Then
-  expect(AirPodsControlCli.cycleListeningMode).toHaveBeenCalledWith(["transparency", "anc"]);
+  expect(PodsControlCli.cycleListeningMode).toHaveBeenCalledWith(["transparency", "anc"]);
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Noise Cancellation ●", {
     channel: "listening-mode",
     revision: "test-revision",
@@ -570,18 +570,18 @@ test("publishes confirmed state while preserving selected-mode failure guidance"
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   const error = new CliError("unsupported", {
     result: "error",
     device: "My AirPods Pro",
     listeningMode: "noise-cancellation",
   });
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockRejectedValue(error);
+  vi.mocked(PodsControlCli.cycleListeningMode).mockRejectedValue(error);
   await runCycleListeningModeCommand();
   // Then
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Noise Cancellation ●", {
@@ -609,12 +609,12 @@ test("restores AirPods when cycling fails without a confirmed mode", async () =>
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockRejectedValue(new CliError("no-op"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockRejectedValue(new CliError("no-op"));
   // When
   await runCycleListeningModeCommand();
   // Then
@@ -634,20 +634,20 @@ test("publishes the confirmed state after toggling", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   await runToggleConversationAwarenessCommand();
   // Then
-  expect(AirPodsControlCli.setConversationAwareness).toHaveBeenCalledWith("on");
+  expect(PodsControlCli.setConversationAwareness).toHaveBeenCalledWith("on");
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("On ●", {
     channel: "conversation-awareness",
     revision: "test-revision",
   });
-  expect(vi.mocked(AirPodsControlCli.setConversationAwareness).mock.invocationCallOrder[0]).toBeLessThan(
+  expect(vi.mocked(PodsControlCli.setConversationAwareness).mock.invocationCallOrder[0]).toBeLessThan(
     mockPublishCommandSubtitle.mock.invocationCallOrder[0],
   );
   expect(toast.setToSuccess).toHaveBeenCalledWith({ titleOverride: "Conversation Awareness On ●" });
@@ -665,18 +665,18 @@ test("publishes the confirmed state from a failed toggle", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   // When
   const error = new CliError("no-op", {
     result: "error",
     device: "My AirPods Pro",
     conversationAwareness: "off",
   });
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockRejectedValue(error);
+  vi.mocked(PodsControlCli.setConversationAwareness).mockRejectedValue(error);
   await runToggleConversationAwarenessCommand();
   // Then
   expect(mockPublishCommandSubtitle).toHaveBeenCalledExactlyOnceWith("Off ○̸", {
@@ -698,12 +698,12 @@ test("preserves unsupported-device feedback", async () => {
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
   // When
   await runToggleConversationAwarenessCommand();
   // Then
@@ -727,12 +727,12 @@ test("restores AirPods when a toggle fails without a confirmed state", async () 
     return this as ToastManager;
   });
   mockGetPreferenceValues.mockReturnValue({ ...defaultCyclePreferences } as never);
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockRejectedValue(new CliError("no-op"));
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.cycleListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockRejectedValue(new CliError("no-op"));
   // When
   await runToggleConversationAwarenessCommand();
   // Then

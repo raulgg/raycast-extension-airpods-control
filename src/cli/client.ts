@@ -34,7 +34,7 @@ export function confirmedConversationAwareness(payload: CliPayload | null): Conv
 function requireListeningMode(payload: CliPayload): ListeningModes {
   const mode = confirmedListeningMode(payload);
   if (!mode) {
-    throw new CliError("invalid-response", payload, "The airpods-control CLI returned an invalid listening mode.");
+    throw new CliError("invalid-response", payload, "The pods-control CLI returned an invalid listening mode.");
   }
   return mode;
 }
@@ -45,7 +45,7 @@ function requireConversationAwareness(payload: CliPayload): ConversationAwarenes
     throw new CliError(
       "invalid-response",
       payload,
-      "The airpods-control CLI returned an invalid Conversation Awareness state.",
+      "The pods-control CLI returned an invalid Conversation Awareness state.",
     );
   }
   return state;

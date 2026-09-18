@@ -77,11 +77,11 @@ Pick the lightest project that can falsify the claim. `npm test` runs all four. 
 
 Each file belongs to exactly one project. Keep file isolation on. Do not stub `lockf` in the macOS project or cut timeouts to make that suite faster.
 
-happy-dom cannot prove native Raycast rendering or HUD fallback. Vitest cannot prove AirPods hardware or a live Homebrew install. Those stay manual.
+happy-dom cannot prove native Raycast rendering or HUD fallback. Vitest cannot prove AirPods or Beats hardware or a live Homebrew install. Those stay manual.
 
 ## Stay in process
 
-Use the Raycast mock, local fake binaries, and in-process stubs. Automated tests do not install or upgrade the CLI with Homebrew, hit the public internet, change AirPods settings, or open the Raycast window.
+Use the Raycast mock, local fake binaries, and in-process stubs. Automated tests do not install or upgrade the CLI with Homebrew, hit the public internet, change device settings, or open the Raycast window.
 
 ## Commands
 

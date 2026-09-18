@@ -179,7 +179,7 @@ export async function withSubtitleOperation<T>(
 }
 
 /**
- * Serialize a refresh that reads multiple AirPods features as one snapshot.
+ * Serialize a refresh that reads multiple listening features as one snapshot.
  * The same revision is reserved for every subtitle derived from that snapshot.
  */
 export async function withSubtitleSnapshotOperation<T>(

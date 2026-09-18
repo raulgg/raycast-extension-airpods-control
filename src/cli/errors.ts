@@ -36,17 +36,18 @@ const EXIT_CODE_ERRORS: Record<number, CliErrorCode> = {
 };
 
 export const ERROR_MESSAGES: Record<CliErrorCode, string> = {
-  "not-installed": "The airpods-control CLI is not installed.",
-  "no-device": "Connect your AirPods to your Mac and try again.",
-  "bad-args": "The airpods-control CLI rejected the command arguments.",
+  "not-installed": "The pods-control CLI is not installed.",
+  "no-device": "Connect your AirPods or Beats to your Mac and try again.",
+  "bad-args": "The pods-control CLI rejected the command arguments.",
   "no-op": "macOS did not confirm the change.",
   unsupported: "This feature is not supported by the connected device.",
-  "read-error": "The CLI could not read AirPods status. Check that your AirPods are connected and try again.",
-  unavailable: "AirPods controls are unavailable. Select your AirPods as the audio output and check CLI compatibility.",
-  "state-uncertain": "The CLI could not confirm the final AirPods state.",
+  "read-error": "The CLI could not read status. Check that your AirPods or Beats are connected and try again.",
+  unavailable:
+    "Listening controls are unavailable. Select your AirPods or Beats as the audio output and check CLI compatibility.",
+  "state-uncertain": "The CLI could not confirm the final listening state.",
   "ambiguous-device": "Multiple compatible devices are connected. Disconnect all but one and try again.",
-  "invalid-response": "The airpods-control CLI returned an invalid response.",
-  unknown: "The airpods-control CLI failed unexpectedly.",
+  "invalid-response": "The pods-control CLI returned an invalid response.",
+  unknown: "The pods-control CLI failed unexpectedly.",
 };
 
 export type CliProcessFailureKind = "timeout" | "max-buffer" | "killed" | "process";

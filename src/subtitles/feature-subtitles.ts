@@ -1,5 +1,5 @@
 import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../airpods/presentation";
-import * as AirPodsControlCli from "../cli/client";
+import * as PodsControlCli from "../cli/client";
 import { type SubtitleRevision } from "../commands/launch-context";
 import { publishCommandSubtitle, resetCommandSubtitle, withSubtitleOperation } from "../subtitles/coordination";
 import type { ConversationAwarenessState, ListeningModes } from "../airpods/types";
@@ -41,7 +41,7 @@ export async function publishConversationAwarenessSubtitle(
 export async function refreshListeningModeSubtitle(): Promise<void> {
   try {
     await withSubtitleOperation("listening-mode", async (revision) => {
-      await refreshCommandSubtitle(AirPodsControlCli.getListeningMode, publishListeningModeSubtitle, revision);
+      await refreshCommandSubtitle(PodsControlCli.getListeningMode, publishListeningModeSubtitle, revision);
     });
   } catch (error) {
     console.error("Failed to coordinate listening-mode refresh", error);
@@ -52,7 +52,7 @@ export async function refreshConversationAwarenessSubtitle(): Promise<void> {
   try {
     await withSubtitleOperation("conversation-awareness", async (revision) => {
       await refreshCommandSubtitle(
-        AirPodsControlCli.getConversationAwareness,
+        PodsControlCli.getConversationAwareness,
         publishConversationAwarenessSubtitle,
         revision,
       );

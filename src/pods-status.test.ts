@@ -1,12 +1,12 @@
 import { LaunchType, type LaunchProps } from "@raycast/api";
 import { expect, vi, test } from "vitest";
-import main from "./refresh-airpods-status";
+import main from "./pods-status";
 import { runWithCliGuard } from "./setup/guard";
-import { resetAirPodsStatusSubtitles, runAirPodsStatusRefresh } from "./status/refresh";
+import { resetStatusSubtitles, runStatusRefresh } from "./status/refresh";
 
 vi.mock("./status/refresh", () => ({
-  resetAirPodsStatusSubtitles: vi.fn(),
-  runAirPodsStatusRefresh: vi.fn(),
+  resetStatusSubtitles: vi.fn(),
+  runStatusRefresh: vi.fn(),
 }));
 
 vi.mock("./setup/guard", () => ({
@@ -24,9 +24,9 @@ test("uses the interactive CLI guard and shows feedback for a manual refresh", a
   await main(launch);
   // Then
   expect(runWithCliGuard).toHaveBeenCalledWith(expect.any(Function), {
-    onUnavailable: resetAirPodsStatusSubtitles,
+    onUnavailable: resetStatusSubtitles,
   });
-  expect(runAirPodsStatusRefresh).toHaveBeenCalledWith({ showFeedback: true });
+  expect(runStatusRefresh).toHaveBeenCalledWith({ showFeedback: true });
 });
 
 test("runs silently in the background without opening setup", async () => {
@@ -35,7 +35,7 @@ test("runs silently in the background without opening setup", async () => {
   // When
   await main(launch);
   // Then
-  expect(runAirPodsStatusRefresh).toHaveBeenCalledWith({ showFeedback: false });
+  expect(runStatusRefresh).toHaveBeenCalledWith({ showFeedback: false });
   expect(runWithCliGuard).not.toHaveBeenCalled();
-  expect(resetAirPodsStatusSubtitles).not.toHaveBeenCalled();
+  expect(resetStatusSubtitles).not.toHaveBeenCalled();
 });

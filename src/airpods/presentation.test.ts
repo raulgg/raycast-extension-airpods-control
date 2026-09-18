@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import {
   conversationAwarenessHud,
   conversationAwarenessSubtitle,
-  formatAirPodsStatusSubtitle,
+  formatStatusSubtitle,
   listeningModeHud,
   listeningModeSubtitle,
 } from "./presentation";
@@ -50,7 +50,7 @@ test.each([
 ] as const)("formats a combined status subtitle %j", (status, expected) => {
   // Given the input supplied by this case
   // When
-  const result = formatAirPodsStatusSubtitle(status);
+  const result = formatStatusSubtitle(status);
   // Then
   expect(result).toBe(expected);
 });

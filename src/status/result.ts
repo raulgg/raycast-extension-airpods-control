@@ -5,14 +5,14 @@ export interface SubtitleDispatchResult {
   conversationAwareness: PromiseSettledResult<void>;
 }
 
-export interface AirPodsStatusRefreshResult {
+export interface StatusRefreshResult {
   listeningMode: PromiseSettledResult<ListeningModes>;
   conversationAwareness: PromiseSettledResult<ConversationAwarenessState>;
   subtitleDispatch: SubtitleDispatchResult;
 }
 
 export function totalReadFailureIncludes(
-  result: Pick<AirPodsStatusRefreshResult, "listeningMode" | "conversationAwareness">,
+  result: Pick<StatusRefreshResult, "listeningMode" | "conversationAwareness">,
   code: "no-device" | "unavailable",
 ): boolean {
   if (result.listeningMode.status !== "rejected" || result.conversationAwareness.status !== "rejected") return false;

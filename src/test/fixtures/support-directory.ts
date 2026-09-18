@@ -6,7 +6,7 @@ import { onTestFinished } from "vitest";
 
 export function createSupportDirectory() {
   const previousPath = environment.supportPath;
-  const path = mkdtempSync(join(tmpdir(), "airpods-control-support-test-"));
+  const path = mkdtempSync(join(tmpdir(), "pods-control-support-test-"));
   environment.supportPath = path;
   onTestFinished(() => {
     try {

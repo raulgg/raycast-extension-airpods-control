@@ -30,7 +30,7 @@ export const LaunchType = {
 } as const;
 
 export const environment = {
-  supportPath: join(tmpdir(), `airpods-control-raycast-test-${process.pid}-${Math.random().toString(36).slice(2)}`),
+  supportPath: join(tmpdir(), `pods-control-raycast-test-${process.pid}-${Math.random().toString(36).slice(2)}`),
   entryPointName: "",
 };
 

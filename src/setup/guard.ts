@@ -19,7 +19,7 @@ export async function runWithCliGuard(
     // perform() reports its own failures; this is a last resort for unexpected ones.
     const message = getErrorMessage(error);
     await showFailureToast(error, {
-      title: "AirPods command failed",
+      title: "Command failed",
       message,
       primaryAction: createCopyErrorAction(message),
     });

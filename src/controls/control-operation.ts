@@ -1,7 +1,7 @@
 import { launchCommand, LaunchType } from "@raycast/api";
 import { CliError } from "../cli/errors";
 import { type SubtitleRevision } from "../commands/launch-context";
-import { REFRESH_AIRPODS_STATUS_COMMAND_NAME } from "../commands/names";
+import { PODS_STATUS_COMMAND_NAME } from "../commands/names";
 import { type ToastManager } from "../feedback/toast-manager";
 import { type SubtitleChannel, withSubtitleOperation } from "../subtitles/coordination";
 
@@ -29,9 +29,9 @@ export async function runWithSubtitleOperation(
     // Refresh after releasing the lock, including when the control action failed.
     if (entered) {
       try {
-        await launchCommand({ name: REFRESH_AIRPODS_STATUS_COMMAND_NAME, type: LaunchType.Background });
+        await launchCommand({ name: PODS_STATUS_COMMAND_NAME, type: LaunchType.Background });
       } catch (error) {
-        console.error("Failed to launch AirPods status refresh after control action", error);
+        console.error("Failed to launch Pods Status after control action", error);
       }
     }
   }
@@ -44,7 +44,7 @@ export async function showCliFailure(
 ): Promise<void> {
   if (error instanceof CliError) {
     if (error.code === "no-device") {
-      await toast.setToFailure({ titleOverride: "AirPods not connected", error });
+      await toast.setToFailure({ titleOverride: "Not connected", error });
       return;
     }
     if (error.code === "no-op" && options.offRequested) {

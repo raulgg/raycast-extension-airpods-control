@@ -10,8 +10,8 @@ test("exposes each command with its required execution mode", () => {
     "set-off": "no-view",
     "cycle-listening-mode": "no-view",
     "toggle-conversation-awareness": "no-view",
-    "refresh-airpods-status": "no-view",
-    "update-airpods-control-cli": "view",
+    "pods-status": "no-view",
+    "manage-cli": "view",
   };
 
   // When
@@ -27,13 +27,17 @@ test("schedules status refresh while leaving direct controls unscheduled", () =>
   const commands: Array<{ name: string; interval?: string; subtitle?: string }> = manifest.commands;
 
   // When
-  const refresh = commands.find(({ name }) => name === "refresh-airpods-status");
+  const refresh = commands.find(({ name }) => name === "pods-status");
   const directControls = commands.filter(({ name }) =>
     ["cycle-listening-mode", "toggle-conversation-awareness"].includes(name),
   );
 
   // Then
-  expect(refresh).toMatchObject({ interval: "1m", subtitle: "AirPods" });
+  expect(refresh).toMatchObject({ interval: "1m" });
+  expect(refresh?.subtitle).toBeUndefined();
   expect(directControls).toHaveLength(2);
-  for (const command of directControls) expect(command.interval).toBeUndefined();
+  for (const command of directControls) {
+    expect(command.interval).toBeUndefined();
+    expect(command.subtitle).toBeUndefined();
+  }
 });

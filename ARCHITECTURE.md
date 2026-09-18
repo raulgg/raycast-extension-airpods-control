@@ -1,6 +1,6 @@
 # Architecture
 
-AirPods Control has eight Raycast command entrypoints in `src/`. Keep those filenames and their manifest identifiers stable. The folders below group the implementation by responsibility; none of them changes the CLI's contract.
+Pods Control has eight Raycast command entrypoints in `src/`. Keep those filenames and their manifest identifiers stable (`pods-status` and `manage-cli` among them). The folders below group the implementation by responsibility; none of them changes the CLI's contract.
 
 ## Finding the code
 
@@ -78,9 +78,9 @@ These describe existing behavior. Changing any of them needs its own behavior re
 
 **Commands and delegation**
 
-- Fixed-mode delegation keeps its guarded fallback. Setup belongs to the originating command, and a successful installation never resumes the original AirPods action.
+- Fixed-mode delegation keeps its guarded fallback. Setup belongs to the originating command, and a successful installation never resumes the original command.
 - Invalid or legacy background contexts without a usable revision trigger a fresh read. A valid context may carry an explicit null state. User-initiated invalid contexts keep their existing error handling.
-- Background commands stay silent, never start an installation, and never change an AirPods setting.
+- Background commands stay silent, never start an installation, and never change a listening setting.
 - Preserve command identifiers, preference keys, visible messages, action ordering, shortcuts, and CLI version references during structural maintenance.
 
 **CLI client**
@@ -109,4 +109,4 @@ These describe existing behavior. Changing any of them needs its own behavior re
 
 ## Verification
 
-See [TESTING.md](TESTING.md) for the test projects, conventions, and the full command list. Raycast rendering, HUD fallback, Homebrew installation, and AirPods hardware are not covered by automated tests; check those manually against a distribution build with compatible hardware connected.
+See [TESTING.md](TESTING.md) for the test projects, conventions, and the full command list. Raycast rendering, HUD fallback, Homebrew installation, and AirPods or Beats hardware are not covered by automated tests; check those manually against a distribution build with compatible hardware connected.

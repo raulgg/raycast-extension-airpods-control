@@ -1,8 +1,8 @@
-# AirPods Control
+# Pods Control
 
-Switch your AirPods between Noise Cancellation, Transparency, Adaptive, and Off, and toggle Conversation Awareness, without leaving Raycast. Command subtitles show the current state as confirmed by macOS.
+Pods Control is a Raycast extension, backed by a local CLI, for controlling AirPods and Beats listening modes (Off, Transparency, Adaptive, Noise Cancellation) and Conversation Awareness, straight from Raycast commands. Command subtitles show the current state as confirmed by macOS.
 
-The extension drives the open-source [airpods-control](https://github.com/raulgg/airpods-control) CLI. It runs on macOS only. Beats headphones that expose these controls in macOS may also work; see the CLI's [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md) for tested models.
+It runs on macOS only. The CLI still ships as [`airpods-control`](https://github.com/raulgg/airpods-control) until that project is renamed. Beats headphones that expose these controls in macOS may also work; see the CLI's [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md) for tested models.
 
 ## Setup
 
@@ -12,12 +12,12 @@ The extension drives the open-source [airpods-control](https://github.com/raulgg
    brew install raulgg/tap/airpods-control
    ```
 
-   You can also skip this step: run any AirPods command and accept **Install with Homebrew** when prompted.
+   You can also skip this step: run any Pods Control command and accept **Install with Homebrew** when prompted.
 
-2. Connect your AirPods and select them as your Mac's audio output.
-3. Run an AirPods command.
+2. Connect your AirPods or Beats and select them as your Mac's audio output.
+3. Run a Pods Control command.
 
-The extension needs CLI 0.4.0 or later and looks for it in `/opt/homebrew/bin` and `/usr/local/bin`. **Manage AirPods Control CLI** shows the installed version and offers **Update with Homebrew** when a newer release is available.
+The extension needs CLI 0.4.0 or later and looks for it in `/opt/homebrew/bin` and `/usr/local/bin`. **Manage CLI** shows the installed version and offers **Update with Homebrew** when a newer release is available.
 
 **Installing without Homebrew.** Follow the CLI's [installation instructions](https://github.com/raulgg/airpods-control/blob/HEAD/README.md#install) and keep the complete installation together, including `avbypass.dylib`. If the binary is outside the standard locations, set its full path in the **CLI Path** preference.
 
@@ -31,10 +31,10 @@ The extension needs CLI 0.4.0 or later and looks for it in `/opt/homebrew/bin` a
 | **Set to Off**                    | Turn noise control off. Disabled by default; requires Off to be enabled in your AirPods settings.                                               |
 | **Cycle Listening Mode**          | Step through the modes selected in its preferences. Unsupported modes are skipped.                                                              |
 | **Toggle Conversation Awareness** | Turn Conversation Awareness on or off. Requires a model that supports it.                                                                       |
-| **Refresh AirPods Status**        | Read the current mode and Conversation Awareness state. Run it once to activate Background Refresh, which keeps subtitles current every minute. |
-| **Manage AirPods Control CLI**    | Install, update, or repair the CLI. Each screen explains the next step and offers the matching action.                                          |
+| **Pods Status**                   | Read the current mode and Conversation Awareness state. Run it once to activate Background Refresh, which keeps subtitles current every minute. |
+| **Manage CLI**                    | Install, update, or repair the pods-control CLI. Each screen explains the next step and offers the matching action.                             |
 
-Control commands show a success toast while Raycast is open and a HUD when it is closed, for example when triggered by a hotkey. Subtitles update after macOS confirms the change; if no AirPods are connected, **Refresh AirPods Status** shows **Not connected**.
+Control commands show a success toast while Raycast is open and a HUD when it is closed, for example when triggered by a hotkey. Subtitles update after macOS confirms the change; if no AirPods or Beats are connected, **Pods Status** shows **Not connected**.
 
 ## Preferences
 
@@ -47,15 +47,15 @@ Control commands show a success toast while Raycast is open and a HUD when it is
 
 ### "CLI not found" after installing
 
-Open **Manage AirPods Control CLI**. It detects unlinked or incomplete Homebrew installs and an invalid **CLI Path**, and gives you the exact command or preference to fix. After following the steps, choose **Refresh** in that view and run your command again.
+Open **Manage CLI**. It detects unlinked or incomplete Homebrew installs and an invalid **CLI Path**, and gives you the exact command or preference to fix. After following the steps, choose **Refresh** in that view and run your command again.
 
 ### "Not connected"
 
-Connect your AirPods and select them as the Mac's audio output. If several compatible devices are connected, disconnect the others; the extension does not choose between devices.
+Connect your AirPods or Beats and select them as the Mac's audio output. If several compatible devices are connected, disconnect the others; the extension does not choose between devices.
 
 ### Adaptive or Conversation Awareness is unavailable
 
-Both depend on your AirPods model and firmware. Check the [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md). **Set to Adaptive** is disabled by default; enable it in Raycast's extension settings if your model supports it.
+Both depend on your model and firmware. Check the [compatibility matrix](https://github.com/raulgg/airpods-control/blob/HEAD/docs/compatibility.md). **Set to Adaptive** is disabled by default; enable it in Raycast's extension settings if your model supports it.
 
 ### Off is unavailable
 
@@ -63,7 +63,7 @@ macOS lets you exclude Off from noise control. Enable it in your AirPods setting
 
 ### Commands stopped working after a macOS update
 
-Check the compatibility matrix and update the CLI from **Manage AirPods Control CLI** or with `brew upgrade raulgg/tap/airpods-control`. A successful install does not by itself mean your device is supported.
+Check the compatibility matrix and update the CLI from **Manage CLI** or with `brew upgrade raulgg/tap/airpods-control`. A successful install does not by itself mean your device is supported.
 
 ## Privacy and security
 

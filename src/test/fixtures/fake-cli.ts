@@ -4,7 +4,7 @@ import { join } from "path";
 import { onTestFinished } from "vitest";
 
 export async function createFakeCli(body: string) {
-  const directory = await mkdtemp(join(tmpdir(), "airpods-control-cli-test-"));
+  const directory = await mkdtemp(join(tmpdir(), "pods-control-cli-test-"));
   const cleanup = () => rm(directory, { recursive: true, force: true });
   onTestFinished(cleanup);
   const path = join(directory, "airpods-control");

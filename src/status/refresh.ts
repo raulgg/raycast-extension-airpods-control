@@ -1,13 +1,13 @@
 import { launchCommand, LaunchType, showToast, Toast } from "@raycast/api";
-import { formatAirPodsStatusSubtitle } from "../airpods/presentation";
-import * as AirPodsControlCli from "../cli/client";
+import { formatStatusSubtitle } from "../airpods/presentation";
+import * as PodsControlCli from "../cli/client";
 import { type SubtitleRevision } from "../commands/launch-context";
 import { CYCLE_LISTENING_MODE_COMMAND_NAME, TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME } from "../commands/names";
 import { publishCommandSubtitle, resetCommandSubtitle, withSubtitleSnapshotOperation } from "../subtitles/coordination";
 import { finishToast } from "./feedback";
-import { totalReadFailureIncludes, type AirPodsStatusRefreshResult } from "./result";
+import { totalReadFailureIncludes, type StatusRefreshResult } from "./result";
 import type { SubtitleDispatchResult } from "./result";
-import type { AirPodsStatusSnapshot, ConversationAwarenessState, ListeningModes } from "../airpods/types";
+import type { StatusSnapshot, ConversationAwarenessState, ListeningModes } from "../airpods/types";
 import type {
   ConversationAwarenessSubtitleRefreshContext,
   ListeningModeSubtitleRefreshContext,
@@ -57,21 +57,21 @@ function logSubtitleDispatchFailures(result: SubtitleDispatchResult): void {
   }
 }
 
-export async function resetAirPodsStatusSubtitles(): Promise<void> {
+export async function resetStatusSubtitles(): Promise<void> {
   try {
     await withSubtitleSnapshotOperation(async (revision) => {
       await resetCommandSubtitle({ channel: "status", revision });
       logSubtitleDispatchFailures(await dispatchSubtitleRefreshes(null, null, revision, revision));
     });
   } catch (error) {
-    console.error("Failed to coordinate AirPods status subtitle reset", error);
+    console.error("Failed to coordinate status subtitle reset", error);
   }
 }
 
 function statusSnapshot(result: {
   listeningMode: PromiseSettledResult<ListeningModes>;
   conversationAwareness: PromiseSettledResult<ConversationAwarenessState>;
-}): AirPodsStatusSnapshot {
+}): StatusSnapshot {
   return {
     listeningMode: result.listeningMode.status === "fulfilled" ? result.listeningMode.value : null,
     conversationAwareness:
@@ -86,7 +86,7 @@ async function publishStatusSubtitle(
   },
   revision: SubtitleRevision,
 ): Promise<void> {
-  const subtitle = formatAirPodsStatusSubtitle(statusSnapshot(result));
+  const subtitle = formatStatusSubtitle(statusSnapshot(result));
   if (subtitle) {
     await publishCommandSubtitle(subtitle, { channel: "status", revision });
   } else if (totalReadFailureIncludes(result, "no-device")) {
@@ -107,12 +107,12 @@ function rejectedStatusReadResult(reason: unknown): {
   };
 }
 
-export async function refreshAirPodsStatus(): Promise<AirPodsStatusRefreshResult> {
+export async function refreshStatus(): Promise<StatusRefreshResult> {
   try {
     return await withSubtitleSnapshotOperation(async (revision) => {
       const [listeningMode, conversationAwareness] = await Promise.allSettled([
-        AirPodsControlCli.getListeningMode(),
-        AirPodsControlCli.getConversationAwareness(),
+        PodsControlCli.getListeningMode(),
+        PodsControlCli.getConversationAwareness(),
       ]);
       const result = { listeningMode, conversationAwareness };
 
@@ -136,14 +136,14 @@ export async function refreshAirPodsStatus(): Promise<AirPodsStatusRefreshResult
   }
 }
 
-export async function runAirPodsStatusRefresh({ showFeedback }: { showFeedback: boolean }): Promise<void> {
+export async function runStatusRefresh({ showFeedback }: { showFeedback: boolean }): Promise<void> {
   const toast = showFeedback
     ? await showToast({
         style: Toast.Style.Animated,
-        title: "Refreshing AirPods status...",
+        title: "Reading status...",
       })
     : null;
-  const result = await refreshAirPodsStatus();
+  const result = await refreshStatus();
 
   if (toast) {
     await finishToast(toast, result);

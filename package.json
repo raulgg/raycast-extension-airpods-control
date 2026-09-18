@@ -1,9 +1,9 @@
 {
   "$schema": "https://www.raycast.com/schemas/extension.json",
-  "name": "airpods-control",
-  "title": "AirPods Control",
-  "description": "Control listening modes and Conversation Awareness on AirPods, and on Beats where macOS exposes those controls, from Raycast with the AirPods Control CLI.",
-  "icon": "airpods-control.png",
+  "name": "pods-control",
+  "title": "Pods Control",
+  "description": "Control AirPods and Beats listening modes (Off, Transparency, Adaptive, Noise Cancellation) and Conversation Awareness, straight from your Raycast commands. Backed by the pods-control CLI.",
+  "icon": "pods-control.png",
   "author": "raulg",
   "platforms": [
     "macOS"
@@ -15,6 +15,7 @@
   "keywords": [
     "airpods",
     "beats",
+    "pods",
     "anc",
     "noise cancellation",
     "transparency",
@@ -27,7 +28,7 @@
     {
       "name": "set-noise-cancellation",
       "title": "Set to Noise Cancellation",
-      "description": "Set the AirPods to Noise Cancellation (ANC) listening mode.",
+      "description": "Set the connected AirPods or Beats to Noise Cancellation (ANC) listening mode.",
       "mode": "no-view",
       "keywords": [
         "airpods",
@@ -40,7 +41,7 @@
     {
       "name": "set-transparency",
       "title": "Set to Transparency",
-      "description": "Set the AirPods to Transparency listening mode.",
+      "description": "Set the connected AirPods or Beats to Transparency listening mode.",
       "mode": "no-view",
       "keywords": [
         "airpods",
@@ -52,10 +53,11 @@
     {
       "name": "set-adaptive",
       "title": "Set to Adaptive",
-      "description": "Set the AirPods to Adaptive listening mode when supported by your AirPods.",
+      "description": "Set the connected AirPods or Beats to Adaptive listening mode when the device supports it.",
       "mode": "no-view",
       "keywords": [
         "airpods",
+        "beats",
         "automatic",
         "audio"
       ],
@@ -64,7 +66,7 @@
     {
       "name": "set-off",
       "title": "Set to Off",
-      "description": "Set the AirPods to the Off listening mode (no Noise Cancellation or Transparency).",
+      "description": "Set the connected AirPods or Beats to the Off listening mode (no Noise Cancellation or Transparency).",
       "mode": "no-view",
       "keywords": [
         "airpods",
@@ -78,8 +80,7 @@
     {
       "name": "cycle-listening-mode",
       "title": "Cycle Listening Mode",
-      "subtitle": "AirPods",
-      "description": "Cycle through your preferred listening modes. The current mode is read from the connected AirPods before cycling, and unsupported modes are skipped.",
+      "description": "Cycle through your preferred listening modes. The current mode is read from the connected AirPods or Beats before cycling, and unsupported modes are skipped.",
       "mode": "no-view",
       "keywords": [
         "airpods",
@@ -108,7 +109,7 @@
         {
           "name": "cycleAdaptive",
           "label": "Adaptive",
-          "description": "Include Adaptive when cycling listening modes. Skipped automatically if your AirPods don't support it.",
+          "description": "Include Adaptive when cycling listening modes. Skipped automatically if the connected device does not support it.",
           "type": "checkbox",
           "default": true,
           "required": false
@@ -126,21 +127,20 @@
     {
       "name": "toggle-conversation-awareness",
       "title": "Toggle Conversation Awareness",
-      "subtitle": "AirPods",
-      "description": "Toggle Conversation Awareness on or off. Requires AirPods that support Conversation Awareness.",
+      "description": "Toggle Conversation Awareness on or off. Requires AirPods or Beats that support Conversation Awareness.",
       "mode": "no-view",
       "keywords": [
         "airpods",
+        "beats",
         "speech",
         "talk",
         "voice"
       ]
     },
     {
-      "name": "refresh-airpods-status",
-      "title": "Refresh AirPods Status",
-      "subtitle": "AirPods",
-      "description": "Refresh the combined status, Listening Mode, and Conversation Awareness subtitles now and about once a minute while Background Refresh is active. If deactivated, the last confirmed values remain visible until another refresh or control command.",
+      "name": "pods-status",
+      "title": "Pods Status",
+      "description": "Read the combined status, Listening Mode, and Conversation Awareness subtitles now and about once a minute while Background Refresh is active. If deactivated, the last confirmed values remain visible until another status or control command.",
       "mode": "no-view",
       "interval": "1m",
       "keywords": [
@@ -151,9 +151,9 @@
       ]
     },
     {
-      "name": "update-airpods-control-cli",
-      "title": "Manage AirPods Control CLI",
-      "description": "Install, update, or fix the AirPods Control CLI used by this extension.",
+      "name": "manage-cli",
+      "title": "Manage CLI",
+      "description": "Install, update, or fix the pods-control CLI used by this extension.",
       "mode": "view",
       "keywords": [
         "airpods",

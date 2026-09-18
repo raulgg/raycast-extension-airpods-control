@@ -5,7 +5,7 @@ import { detectCliSetup, type CliSetup } from "./detection";
 import { openCliSetup } from "./navigation";
 
 export type CliOperation = "install" | "update";
-const READY_MESSAGE = "Run your AirPods command again.";
+const READY_MESSAGE = "Run your command again.";
 let pendingPrompt: Promise<void> | undefined;
 let pendingOperation: Promise<CliSetup> | undefined;
 
@@ -42,7 +42,7 @@ async function performInstallation(operation: CliOperation): Promise<CliSetup> {
     const before = await detectCliSetup();
     // Installation may have finished elsewhere while the confirmation was open.
     if (operation === "install" && before.cliPath) {
-      await showToast({ style: Toast.Style.Success, title: "AirPods Control CLI ready", message: READY_MESSAGE });
+      await showToast({ style: Toast.Style.Success, title: "Pods Control CLI ready", message: READY_MESSAGE });
       return before;
     }
     if (before.state !== operation) {
@@ -50,7 +50,7 @@ async function performInstallation(operation: CliOperation): Promise<CliSetup> {
     }
     toast = await showToast({
       style: Toast.Style.Animated,
-      title: operation === "install" ? "Installing AirPods Control CLI…" : "Updating AirPods Control CLI…",
+      title: operation === "install" ? "Installing Pods Control CLI…" : "Updating Pods Control CLI…",
       message: "This can take several minutes. Keep Raycast running until it finishes.",
     });
     const after = await runBrewOperationWithProgress(toast, async () => {
@@ -61,7 +61,7 @@ async function performInstallation(operation: CliOperation): Promise<CliSetup> {
       throw new Error("Homebrew finished, but the CLI is not ready to use. Open CLI Setup to check the installation.");
     }
     toast.style = Toast.Style.Success;
-    toast.title = "AirPods Control CLI ready";
+    toast.title = "Pods Control CLI ready";
     toast.message = READY_MESSAGE;
     await toast.show();
     return after;
@@ -69,9 +69,9 @@ async function performInstallation(operation: CliOperation): Promise<CliSetup> {
     const message = getErrorMessage(error);
     const options: Toast.Options = {
       style: Toast.Style.Failure,
-      title: operation === "install" ? "AirPods Control CLI installation failed" : "AirPods Control CLI update failed",
+      title: operation === "install" ? "Pods Control CLI installation failed" : "Pods Control CLI update failed",
       message,
-      primaryAction: { title: "Open AirPods Control CLI Setup", onAction: openCliSetup },
+      primaryAction: { title: "Open Pods Control CLI Setup", onAction: openCliSetup },
       secondaryAction: createCopyErrorAction(message),
     };
     if (toast) {
@@ -84,7 +84,7 @@ async function performInstallation(operation: CliOperation): Promise<CliSetup> {
   }
 }
 
-/** Setup never runs the AirPods action that originally required the CLI. */
+/** Setup never runs the command that originally required the CLI. */
 export function promptForCliInstallation(): Promise<void> {
   pendingPrompt ??= offerInstallation().finally(() => {
     pendingPrompt = undefined;
@@ -102,7 +102,7 @@ async function offerInstallation(): Promise<void> {
     return;
   }
   if (setup.cliPath) {
-    await showToast({ style: Toast.Style.Success, title: "AirPods Control CLI ready", message: READY_MESSAGE });
+    await showToast({ style: Toast.Style.Success, title: "Pods Control CLI ready", message: READY_MESSAGE });
     return;
   }
   if (setup.state !== "install") {
@@ -110,9 +110,9 @@ async function offerInstallation(): Promise<void> {
     return;
   }
   const confirmed = await confirmAlert({
-    title: "Install AirPods Control CLI?",
+    title: "Install Pods Control CLI?",
     message:
-      "Install the CLI to control your AirPods from Raycast. Homebrew can take several minutes. When it finishes, run your AirPods command again.",
+      "Install the CLI to control AirPods and Beats from Raycast. Homebrew can take several minutes. When it finishes, run your command again.",
     primaryAction: { title: "Install with Homebrew" },
     dismissAction: { title: "Cancel" },
   });

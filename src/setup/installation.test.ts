@@ -34,7 +34,7 @@ test.each(["installing", "needs-homebrew", "needs-developer-tools", "invalid-cli
       // When
       await promptForCliInstallation();
       // Then
-      expect(launchCommand).toHaveBeenCalledWith({ name: "update-airpods-control-cli", type: "userInitiated" });
+      expect(launchCommand).toHaveBeenCalledWith({ name: "manage-cli", type: "userInitiated" });
       expect(confirmAlert).not.toHaveBeenCalled();
       expect(installCliWithBrew).not.toHaveBeenCalled();
       expect(showToast).not.toHaveBeenCalled();
@@ -188,7 +188,7 @@ test("does not install after prerequisites change during confirmation", async ()
   }
 });
 
-test("returns the verified helper without resuming an AirPods command", async () => {
+test("returns the verified helper without resuming a command", async () => {
   // Given
   vi.useFakeTimers();
   try {

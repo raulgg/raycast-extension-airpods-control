@@ -110,11 +110,11 @@ function diagnosticsMessage(diagnostics: CliDiagnostics): string {
 function processFailureMessage(diagnostics: CliDiagnostics): string {
   const base =
     diagnostics.kind === "timeout"
-      ? "The airpods-control CLI timed out."
+      ? "The pods-control CLI timed out."
       : diagnostics.kind === "max-buffer"
-        ? "The airpods-control CLI produced too much output."
+        ? "The pods-control CLI produced too much output."
         : diagnostics.kind === "killed"
-          ? `The airpods-control CLI was terminated${diagnostics.signal === null ? "" : ` by ${diagnostics.signal}`}.`
+          ? `The pods-control CLI was terminated${diagnostics.signal === null ? "" : ` by ${diagnostics.signal}`}.`
           : ERROR_MESSAGES.unknown;
   const details = diagnosticsMessage(diagnostics);
   return details ? `${base}\n\nCLI diagnostics:\n${details}` : base;
@@ -181,7 +181,7 @@ export async function runCli(args: string[]): Promise<CliPayload> {
     throw new CliError("no-op", payload);
   }
   if (payload.result === "interrupted") {
-    throw new CliError("unknown", payload, `The airpods-control CLI was interrupted by signal ${payload.signal}.`);
+    throw new CliError("unknown", payload, `The pods-control CLI was interrupted by signal ${payload.signal}.`);
   }
   if (payload.result !== "ok") {
     const code = toErrorCode(payload.error, undefined);
