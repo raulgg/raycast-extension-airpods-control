@@ -1,9 +1,9 @@
 import { Toast } from "@raycast/api";
 import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../airpods/presentation";
 import { createCopyErrorAction, getErrorMessage } from "../feedback/error-actions";
-import { totalReadFailureIncludes, type AirPodsStatusRefreshResult } from "./result";
+import { totalReadFailureIncludes, type StatusRefreshResult } from "./result";
 
-function fulfilledStatusMessage(result: AirPodsStatusRefreshResult): string {
+function fulfilledStatusMessage(result: StatusRefreshResult): string {
   const parts: string[] = [];
   if (result.listeningMode.status === "fulfilled") {
     parts.push(`Listening: ${listeningModeSubtitle(result.listeningMode.value)}`);
@@ -14,7 +14,7 @@ function fulfilledStatusMessage(result: AirPodsStatusRefreshResult): string {
   return parts.join(" · ");
 }
 
-function failureMessage(result: AirPodsStatusRefreshResult): string {
+function failureMessage(result: StatusRefreshResult): string {
   const failures: Array<{ label: string; message: string }> = [];
   if (result.listeningMode.status === "rejected") {
     failures.push({ label: "Listening Mode", message: getErrorMessage(result.listeningMode.reason) });
@@ -32,7 +32,7 @@ function failureMessage(result: AirPodsStatusRefreshResult): string {
   return failures.map(({ label, message }) => `${label}: ${message}`).join(" · ");
 }
 
-function subtitleDispatchFailureMessage(result: AirPodsStatusRefreshResult): string {
+function subtitleDispatchFailureMessage(result: StatusRefreshResult): string {
   const failures: Array<{ label: string; message: string }> = [];
   if (result.subtitleDispatch.listeningMode.status === "rejected") {
     failures.push({
@@ -49,7 +49,7 @@ function subtitleDispatchFailureMessage(result: AirPodsStatusRefreshResult): str
   return failures.map(({ label, message }) => `${label}: ${message}`).join(" · ");
 }
 
-export async function finishToast(toast: Toast, result: AirPodsStatusRefreshResult): Promise<void> {
+export async function finishToast(toast: Toast, result: StatusRefreshResult): Promise<void> {
   const listeningSucceeded = result.listeningMode.status === "fulfilled";
   const conversationSucceeded = result.conversationAwareness.status === "fulfilled";
   const listeningRefreshLaunched = result.subtitleDispatch.listeningMode.status === "fulfilled";
@@ -57,14 +57,14 @@ export async function finishToast(toast: Toast, result: AirPodsStatusRefreshResu
 
   if (listeningSucceeded && conversationSucceeded && listeningRefreshLaunched && conversationRefreshLaunched) {
     toast.style = Toast.Style.Success;
-    toast.title = "AirPods status read";
+    toast.title = "Status read";
     toast.message = fulfilledStatusMessage(result);
     toast.primaryAction = undefined;
     toast.secondaryAction = undefined;
   } else if (totalReadFailureIncludes(result, "no-device") && listeningRefreshLaunched && conversationRefreshLaunched) {
     toast.style = Toast.Style.Success;
-    toast.title = "AirPods not connected";
-    toast.message = "Connect your AirPods to your Mac and try again.";
+    toast.title = "Not connected";
+    toast.message = "Connect your AirPods or Beats to your Mac and try again.";
     toast.primaryAction = undefined;
     toast.secondaryAction = undefined;
   } else {
@@ -79,7 +79,7 @@ export async function finishToast(toast: Toast, result: AirPodsStatusRefreshResu
     if (dispatchFailure && !readFailure) {
       toast.title = "Could not refresh subtitles";
     } else {
-      toast.title = partial ? "AirPods status partially refreshed" : "Failed to refresh AirPods status";
+      toast.title = partial ? "Status partially read" : "Failed to read status";
     }
     toast.message = message;
     toast.primaryAction = createCopyErrorAction(message);

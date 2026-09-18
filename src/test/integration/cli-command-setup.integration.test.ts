@@ -41,7 +41,7 @@ test("opens the CLI setup view when the CLI and Homebrew are missing", async () 
   // When
   await runWithCliGuard(perform);
   // Then
-  expect(launchCommand).toHaveBeenCalledWith({ name: "update-airpods-control-cli", type: "userInitiated" });
+  expect(launchCommand).toHaveBeenCalledWith({ name: "manage-cli", type: "userInitiated" });
   expect(confirmAlert).not.toHaveBeenCalled();
   expect(showToast).not.toHaveBeenCalled();
   expect(installCliWithBrew).not.toHaveBeenCalled();

@@ -1,9 +1,9 @@
 import { Clipboard, launchCommand, LaunchType, showToast, Toast, updateCommandMetadata } from "@raycast/api";
 import { expect, vi, test } from "vitest";
-import * as AirPodsControlCli from "../../cli/client";
+import * as PodsControlCli from "../../cli/client";
 import { CliError } from "../../cli/errors";
 import { CYCLE_LISTENING_MODE_COMMAND_NAME, TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME } from "../../commands/names";
-import { refreshAirPodsStatus, resetAirPodsStatusSubtitles, runAirPodsStatusRefresh } from "../../status/refresh";
+import { refreshStatus, resetStatusSubtitles, runStatusRefresh } from "../../status/refresh";
 import { expectConsoleError } from "../console";
 import { createSupportDirectory } from "../fixtures/support-directory";
 
@@ -21,7 +21,7 @@ const mockUpdateCommandMetadata = vi.mocked(updateCommandMetadata);
 function makeToast(): Toast {
   return {
     style: Toast.Style.Animated,
-    title: "Refreshing AirPods status...",
+    title: "Reading status...",
     message: undefined,
     primaryAction: undefined,
     secondaryAction: undefined,
@@ -40,10 +40,10 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     // When
-    const result = await refreshAirPodsStatus();
+    const result = await refreshStatus();
     // Then
     expect(result).toEqual({
       listeningMode: { status: "fulfilled", value: "anc" },
@@ -53,8 +53,8 @@ test.skipIf(process.platform !== "darwin")(
         conversationAwareness: { status: "fulfilled", value: undefined },
       },
     });
-    expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce();
-    expect(AirPodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({
       subtitle: "Noise Cancellation ● · CA ●",
     });
@@ -93,8 +93,8 @@ test.skipIf(process.platform !== "darwin").each([
 ])("retains successful reads when subtitle dispatch fails for $name", async ({ listeningFails, conversationFails }) => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
   const listeningError = new Error("Cycle Listening Mode is disabled");
   const conversationError = new Error("Conversation Awareness is disabled");
   mockLaunchCommand.mockImplementation(async ({ name }) => {
@@ -102,7 +102,7 @@ test.skipIf(process.platform !== "darwin").each([
     if (name === "toggle-conversation-awareness" && conversationFails) throw conversationError;
   });
   // When
-  const result = await refreshAirPodsStatus();
+  const result = await refreshStatus();
   // Then
   expect(result.listeningMode).toEqual({ status: "fulfilled", value: "anc" });
   expect(result.conversationAwareness).toEqual({ status: "fulfilled", value: "on" });
@@ -121,11 +121,11 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     // Then
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "Noise Cancellation ●" });
     expect(mockLaunchCommand).toHaveBeenCalledWith(
@@ -147,13 +147,13 @@ test.skipIf(process.platform !== "darwin").each([
 ] as const)("publishes the appropriate subtitle for %s", async (code, subtitle) => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
   // When
   const error = new CliError(code);
-  vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(error);
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(error);
-  await refreshAirPodsStatus();
+  vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(error);
+  vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(error);
+  await refreshStatus();
   // Then
   expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle });
 });
@@ -161,26 +161,26 @@ test.skipIf(process.platform !== "darwin").each([
 test.skipIf(process.platform !== "darwin")("updates the subtitle when AirPods disconnect and reconnect", async () => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getListeningMode)
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode)
     .mockResolvedValueOnce("anc")
     .mockRejectedValueOnce(new CliError("no-device"))
     .mockResolvedValueOnce("transparency");
-  vi.mocked(AirPodsControlCli.getConversationAwareness)
+  vi.mocked(PodsControlCli.getConversationAwareness)
     .mockResolvedValueOnce("on")
     .mockRejectedValueOnce(new CliError("no-device"))
     .mockResolvedValueOnce("off");
   // When
-  await refreshAirPodsStatus();
+  await refreshStatus();
   // Then
   expect(mockUpdateCommandMetadata).toHaveBeenLastCalledWith({ subtitle: "Noise Cancellation ● · CA ●" });
   // When
-  await refreshAirPodsStatus();
+  await refreshStatus();
   // Then
   expect(mockUpdateCommandMetadata).toHaveBeenLastCalledWith({ subtitle: "Not connected" });
   // When
-  await refreshAirPodsStatus();
+  await refreshStatus();
   // Then
   expect(mockUpdateCommandMetadata.mock.calls).toEqual([
     [{ subtitle: "Noise Cancellation ● · CA ●" }],
@@ -194,11 +194,11 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     // Then
     expect(mockUpdateCommandMetadata).toHaveBeenCalledExactlyOnceWith({ subtitle: "Noise Cancellation ●" });
   },
@@ -209,12 +209,12 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new Error("timeout"));
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new Error("timeout"));
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     // Then
     expect(mockUpdateCommandMetadata).toHaveBeenCalledExactlyOnceWith({ subtitle: "Not connected" });
   },
@@ -223,12 +223,12 @@ test.skipIf(process.platform !== "darwin")(
 test.skipIf(process.platform !== "darwin")("stays silent when a background refresh detects disconnection", async () => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
-  vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
+  vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
   // When
-  await runAirPodsStatusRefresh({ showFeedback: false });
+  await runStatusRefresh({ showFeedback: false });
   // Then
   expect(mockShowToast).not.toHaveBeenCalled();
   expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "Not connected" });
@@ -239,16 +239,16 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValueOnce("anc").mockRejectedValue(new Error("timeout"));
-    vi.mocked(AirPodsControlCli.getConversationAwareness)
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValueOnce("anc").mockRejectedValue(new Error("timeout"));
+    vi.mocked(PodsControlCli.getConversationAwareness)
       .mockResolvedValueOnce("on")
       .mockRejectedValue(new Error("timeout"));
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     // Then
     expect(mockUpdateCommandMetadata).toHaveBeenCalledExactlyOnceWith({ subtitle: "Noise Cancellation ● · CA ●" });
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     // Then
     expect(mockUpdateCommandMetadata).toHaveBeenCalledExactlyOnceWith({ subtitle: "Noise Cancellation ● · CA ●" });
   },
@@ -259,13 +259,13 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     // When
-    await resetAirPodsStatusSubtitles();
+    await resetStatusSubtitles();
     // Then
-    expect(AirPodsControlCli.getListeningMode).not.toHaveBeenCalled();
-    expect(AirPodsControlCli.getConversationAwareness).not.toHaveBeenCalled();
+    expect(PodsControlCli.getListeningMode).not.toHaveBeenCalled();
+    expect(PodsControlCli.getConversationAwareness).not.toHaveBeenCalled();
     expect(mockLaunchCommand).toHaveBeenCalledWith(
       expect.objectContaining({
         context: expect.objectContaining({ operation: "refresh-listening-mode-subtitle", mode: null }),
@@ -282,14 +282,14 @@ test.skipIf(process.platform !== "darwin")(
 test.skipIf(process.platform !== "darwin")("logs rejected subtitle launches during setup fallback", async () => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
   const error = new Error("Cycle Listening Mode is disabled");
   const consoleError = vi.mocked(console.error);
   expectConsoleError("Failed to dispatch Cycle Listening Mode subtitle refresh", error);
   mockLaunchCommand.mockRejectedValueOnce(error);
   // When
-  await resetAirPodsStatusSubtitles();
+  await resetStatusSubtitles();
   // Then
   expect(consoleError).toHaveBeenCalledWith("Failed to dispatch Cycle Listening Mode subtitle refresh", error);
 });
@@ -297,10 +297,10 @@ test.skipIf(process.platform !== "darwin")("logs rejected subtitle launches duri
 test.skipIf(process.platform !== "darwin")("stays silent on a scheduled refresh", async () => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
   // When
-  await runAirPodsStatusRefresh({ showFeedback: false });
+  await runStatusRefresh({ showFeedback: false });
   // Then
   expect(mockShowToast).not.toHaveBeenCalled();
   expect(mockLaunchCommand).toHaveBeenCalledTimes(2);
@@ -311,8 +311,8 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const listeningError = new Error("Cycle Listening Mode is disabled");
     const conversationError = new Error("Conversation Awareness is disabled");
     const consoleError = vi.mocked(console.error);
@@ -320,7 +320,7 @@ test.skipIf(process.platform !== "darwin")(
     expectConsoleError("Failed to dispatch Toggle Conversation Awareness subtitle refresh", conversationError);
     mockLaunchCommand.mockRejectedValueOnce(listeningError).mockRejectedValueOnce(conversationError);
     // When
-    await runAirPodsStatusRefresh({ showFeedback: false });
+    await runStatusRefresh({ showFeedback: false });
     // Then
     expect(mockShowToast).not.toHaveBeenCalled();
     expect(consoleError).toHaveBeenNthCalledWith(
@@ -341,16 +341,16 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const toast = makeToast();
     mockShowToast.mockResolvedValueOnce(toast);
     // When
-    await runAirPodsStatusRefresh({ showFeedback: true });
+    await runStatusRefresh({ showFeedback: true });
     // Then
     expect(mockShowToast).toHaveBeenCalledWith({
       style: Toast.Style.Animated,
-      title: "Refreshing AirPods status...",
+      title: "Reading status...",
     });
     expect(toast.style).toBe(Toast.Style.Success);
     expect(toast.message).toBe("Listening: Noise Cancellation ● · Conversation Awareness: On ●");
@@ -364,14 +364,14 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const toast = makeToast();
     const error = new Error("Cycle Listening Mode is disabled");
     mockShowToast.mockResolvedValueOnce(toast);
     mockLaunchCommand.mockRejectedValueOnce(error);
     // When
-    await runAirPodsStatusRefresh({ showFeedback: true });
+    await runStatusRefresh({ showFeedback: true });
     // Then
     expect(toast.style).toBe(Toast.Style.Failure);
     expect(toast.message).toBe(
@@ -391,16 +391,16 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const toast = makeToast();
     // When
     const readError = new CliError("unsupported");
     const launchError = new Error("Cycle Listening Mode is disabled");
     mockShowToast.mockResolvedValueOnce(toast);
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(readError);
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(readError);
     mockLaunchCommand.mockRejectedValueOnce(launchError);
-    await runAirPodsStatusRefresh({ showFeedback: true });
+    await runStatusRefresh({ showFeedback: true });
     // Then
     expect(toast.style).toBe(Toast.Style.Failure);
     expect(toast.message).toContain("Listening: Noise Cancellation ●");
@@ -416,13 +416,13 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const toast = makeToast();
     mockShowToast.mockResolvedValueOnce(toast);
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("unsupported"));
     // When
-    await runAirPodsStatusRefresh({ showFeedback: true });
+    await runStatusRefresh({ showFeedback: true });
     // Then
     expect(toast.style).toBe(Toast.Style.Failure);
     expect(toast.message).toContain("Listening: Noise Cancellation ●");
@@ -437,14 +437,14 @@ test.skipIf(process.platform !== "darwin")(
   async () => {
     // Given
     createSupportDirectory();
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     const toast = makeToast();
     mockShowToast.mockResolvedValueOnce(toast);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
+    vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
+    vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
     // When
-    await runAirPodsStatusRefresh({ showFeedback: true });
+    await runStatusRefresh({ showFeedback: true });
     // Then
     expect(toast.style).toBe(Toast.Style.Success);
     expect(toast.primaryAction).toBeUndefined();
@@ -456,15 +456,15 @@ test.skipIf(process.platform !== "darwin")(
 test.skipIf(process.platform !== "darwin")("still reports subtitle dispatch failures when disconnected", async () => {
   // Given
   createSupportDirectory();
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
   const toast = makeToast();
   mockShowToast.mockResolvedValueOnce(toast);
-  vi.mocked(AirPodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
+  vi.mocked(PodsControlCli.getListeningMode).mockRejectedValue(new CliError("no-device"));
+  vi.mocked(PodsControlCli.getConversationAwareness).mockRejectedValue(new CliError("no-device"));
   mockLaunchCommand.mockRejectedValueOnce(new Error("Cycle Listening Mode is disabled"));
   // When
-  await runAirPodsStatusRefresh({ showFeedback: true });
+  await runStatusRefresh({ showFeedback: true });
   // Then
   expect(toast.style).toBe(Toast.Style.Failure);
   expect(toast.message).toContain("Cycle Listening Mode is disabled");

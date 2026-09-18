@@ -26,7 +26,7 @@ test("returns the GitHub tag when the latest release is available", async () => 
       signal: expect.any(AbortSignal),
       headers: expect.objectContaining({
         Accept: "application/vnd.github+json",
-        "User-Agent": "airpods-control-raycast-extension",
+        "User-Agent": "pods-control-raycast-extension",
       }),
     }),
   );

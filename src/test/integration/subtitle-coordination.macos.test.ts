@@ -3,13 +3,13 @@ import { mkdirSync, rmSync, writeFileSync } from "fs";
 import { join } from "path";
 import { environment, launchCommand, LaunchType, updateCommandMetadata } from "@raycast/api";
 import { expect, vi, test } from "vitest";
-import * as AirPodsControlCli from "../../cli/client";
+import * as PodsControlCli from "../../cli/client";
 import { type ListeningModeSubtitleRefreshContext } from "../../commands/launch-context";
 import { CYCLE_LISTENING_MODE_COMMAND_NAME, TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME } from "../../commands/names";
 import { runToggleConversationAwarenessCommand } from "../../controls/conversation-awareness";
 import { runSetListeningModeCommand } from "../../controls/listening-mode";
 import cycleListeningMode from "../../cycle-listening-mode";
-import { refreshAirPodsStatus } from "../../status/refresh";
+import { refreshStatus } from "../../status/refresh";
 import {
   publishCommandSubtitle,
   resetCommandSubtitle,
@@ -22,7 +22,7 @@ import { createSupportDirectory } from "../fixtures/support-directory";
 import type { ListeningModes } from "../../airpods/types";
 
 vi.mock("../../cli/client", async (importOriginal) => ({
-  ...(await importOriginal<typeof AirPodsControlCli>()),
+  ...(await importOriginal<typeof PodsControlCli>()),
   cycleListeningMode: vi.fn(),
   getConversationAwareness: vi.fn(),
   getListeningMode: vi.fn(),
@@ -59,17 +59,17 @@ test.skipIf(process.platform !== "darwin")("clears the subtitle when the confirm
   removeRevisionState();
   mockLaunchCommand.mockResolvedValue(undefined);
   mockUpdateCommandMetadata.mockResolvedValue(undefined);
-  vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-  vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-  vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-  vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+  vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+  vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+  vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+  vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
   const error = new Error("metadata failed");
   expectConsoleError("Failed to update the command subtitle", error);
   mockUpdateCommandMetadata.mockRejectedValueOnce(error);
   // When
   await runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
   // Then
-  expect(AirPodsControlCli.setListeningMode).toHaveBeenCalledWith("anc");
+  expect(PodsControlCli.setListeningMode).toHaveBeenCalledWith("anc");
   expect(mockUpdateCommandMetadata.mock.calls.map(([metadata]) => metadata)).toEqual([
     { subtitle: "Noise Cancellation ●" },
     { subtitle: null },
@@ -84,17 +84,17 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockImplementationOnce(async () => {
-      vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("adaptive");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.setListeningMode).mockImplementationOnce(async () => {
+      vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("adaptive");
       return "adaptive";
     });
     mockLaunchCommand.mockImplementation(async ({ name, context }) => {
-      if (name === "refresh-airpods-status") {
-        await refreshAirPodsStatus();
+      if (name === "pods-status") {
+        await refreshStatus();
       } else if (name === CYCLE_LISTENING_MODE_COMMAND_NAME) {
         await cycleListeningMode({ launchType: LaunchType.Background, launchContext: context } as never);
       } else if (name === TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME) {
@@ -108,8 +108,8 @@ test.skipIf(process.platform !== "darwin")(
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "Adaptive ◑" });
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "Off ○̸" });
     expect(mockLaunchCommand).toHaveBeenCalledTimes(3);
-    expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce();
-    expect(AirPodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
   },
 );
 
@@ -121,32 +121,32 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     let resolveListeningRead!: (mode: ListeningModes) => void;
     const listeningRead = new Promise<ListeningModes>((resolve) => {
       resolveListeningRead = resolve;
     });
-    vi.mocked(AirPodsControlCli.getListeningMode).mockReturnValue(listeningRead);
+    vi.mocked(PodsControlCli.getListeningMode).mockReturnValue(listeningRead);
     // When
-    const refreshPromise = refreshAirPodsStatus();
+    const refreshPromise = refreshStatus();
     const running: Promise<unknown>[] = [refreshPromise];
     try {
-      await vi.waitFor(() => expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce());
+      await vi.waitFor(() => expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce());
       const controlPromise = runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
       running.push(controlPromise);
       await Promise.resolve();
       // Then
-      expect(AirPodsControlCli.setListeningMode).not.toHaveBeenCalled();
+      expect(PodsControlCli.setListeningMode).not.toHaveBeenCalled();
       resolveListeningRead("transparency");
       // When
       await Promise.all([refreshPromise, controlPromise]);
       // Then
-      expect(AirPodsControlCli.setListeningMode).toHaveBeenCalledOnce();
-      expect(vi.mocked(AirPodsControlCli.getListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
-        vi.mocked(AirPodsControlCli.setListeningMode).mock.invocationCallOrder[0],
+      expect(PodsControlCli.setListeningMode).toHaveBeenCalledOnce();
+      expect(vi.mocked(PodsControlCli.getListeningMode).mock.invocationCallOrder[0]).toBeLessThan(
+        vi.mocked(PodsControlCli.setListeningMode).mock.invocationCallOrder[0],
       );
     } finally {
       resolveListeningRead("transparency");
@@ -163,32 +163,32 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     const firstRead = deferred<ListeningModes>();
     let readCount = 0;
-    vi.mocked(AirPodsControlCli.getListeningMode).mockImplementation(() => {
+    vi.mocked(PodsControlCli.getListeningMode).mockImplementation(() => {
       if (readCount++ === 0) {
         return firstRead.promise;
       }
       return Promise.resolve("anc");
     });
     // When
-    const firstRefresh = refreshAirPodsStatus();
+    const firstRefresh = refreshStatus();
     const running: Promise<unknown>[] = [firstRefresh];
     try {
-      await vi.waitFor(() => expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce());
-      const secondRefresh = refreshAirPodsStatus();
+      await vi.waitFor(() => expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce());
+      const secondRefresh = refreshStatus();
       running.push(secondRefresh);
       await Promise.resolve();
       // Then
-      expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce();
+      expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce();
       firstRead.resolve("transparency");
       // When
       await firstRefresh;
-      await vi.waitFor(() => expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledTimes(2));
+      await vi.waitFor(() => expect(PodsControlCli.getListeningMode).toHaveBeenCalledTimes(2));
       await secondRefresh;
       // Then
       expect(mockUpdateCommandMetadata.mock.calls.map(([metadata]) => metadata.subtitle)).toEqual([
@@ -210,20 +210,20 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     let resolveSet!: (mode: ListeningModes) => void;
     const setResult = new Promise<ListeningModes>((resolve) => {
       resolveSet = resolve;
     });
-    vi.mocked(AirPodsControlCli.setListeningMode).mockReturnValue(setResult);
+    vi.mocked(PodsControlCli.setListeningMode).mockReturnValue(setResult);
     // When
     const controlPromise = runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
     const running: Promise<unknown>[] = [controlPromise];
     try {
-      await vi.waitFor(() => expect(AirPodsControlCli.setListeningMode).toHaveBeenCalledOnce());
+      await vi.waitFor(() => expect(PodsControlCli.setListeningMode).toHaveBeenCalledOnce());
       const resetPromise = resetCommandSubtitle({ channel: "listening-mode" });
       running.push(resetPromise);
       await Promise.resolve();
@@ -252,16 +252,16 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     const launches: LaunchCall[] = [];
     mockLaunchCommand.mockImplementation(async (options) => {
       launches.push(options);
     });
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     const listeningLaunch = launches.find(({ name }) => name === CYCLE_LISTENING_MODE_COMMAND_NAME);
     // Then
     expect(listeningLaunch?.context).toEqual(
@@ -295,16 +295,16 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     const launches: LaunchCall[] = [];
     mockLaunchCommand.mockImplementation(async (options) => {
       launches.push(options);
     });
     // When
-    await refreshAirPodsStatus();
+    await refreshStatus();
     const conversationLaunch = launches.find(({ name }) => name === TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME);
     // Then
     expect(conversationLaunch?.context).toEqual(
@@ -338,11 +338,11 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("anc");
     // When
     await cycleListeningMode({
       launchType: LaunchType.Background,
@@ -350,7 +350,7 @@ test.skipIf(process.platform !== "darwin")(
       launchContext: { operation: "refresh-listening-mode-subtitle", mode: null },
     } as never);
     // Then
-    expect(AirPodsControlCli.getListeningMode).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getListeningMode).toHaveBeenCalledOnce();
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "Noise Cancellation ●" });
     expect(mockUpdateCommandMetadata).not.toHaveBeenCalledWith({ subtitle: null });
   },
@@ -364,11 +364,11 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("on");
     // When
     await toggleConversationAwareness({
       launchType: LaunchType.Background,
@@ -376,7 +376,7 @@ test.skipIf(process.platform !== "darwin")(
       launchContext: { operation: "refresh-conversation-awareness-subtitle", state: null },
     } as never);
     // Then
-    expect(AirPodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
+    expect(PodsControlCli.getConversationAwareness).toHaveBeenCalledOnce();
     expect(mockUpdateCommandMetadata).toHaveBeenCalledWith({ subtitle: "On ●" });
     expect(mockUpdateCommandMetadata).not.toHaveBeenCalledWith({ subtitle: null });
   },
@@ -390,10 +390,10 @@ test.skipIf(process.platform !== "darwin").each(["missing", "malformed"] as cons
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     // When
     mkdirSync(environment.supportPath, { recursive: true });
     const statePath = join(environment.supportPath, "subtitle-metadata.json");
@@ -422,20 +422,20 @@ test.skipIf(process.platform !== "darwin")(
     removeRevisionState();
     mockLaunchCommand.mockResolvedValue(undefined);
     mockUpdateCommandMetadata.mockResolvedValue(undefined);
-    vi.mocked(AirPodsControlCli.getListeningMode).mockResolvedValue("transparency");
-    vi.mocked(AirPodsControlCli.setListeningMode).mockResolvedValue("anc");
-    vi.mocked(AirPodsControlCli.getConversationAwareness).mockResolvedValue("off");
-    vi.mocked(AirPodsControlCli.setConversationAwareness).mockResolvedValue("on");
+    vi.mocked(PodsControlCli.getListeningMode).mockResolvedValue("transparency");
+    vi.mocked(PodsControlCli.setListeningMode).mockResolvedValue("anc");
+    vi.mocked(PodsControlCli.getConversationAwareness).mockResolvedValue("off");
+    vi.mocked(PodsControlCli.setConversationAwareness).mockResolvedValue("on");
     let resolveSet!: (mode: ListeningModes) => void;
     const setResult = new Promise<ListeningModes>((resolve) => {
       resolveSet = resolve;
     });
-    vi.mocked(AirPodsControlCli.setListeningMode).mockReturnValue(setResult);
+    vi.mocked(PodsControlCli.setListeningMode).mockReturnValue(setResult);
     // When
     const controlPromise = runSetListeningModeCommand("anc", { updateCycleSubtitle: true });
     const lockPath = join(environment.supportPath, "subtitle-listening-mode-operation.lock");
     try {
-      await vi.waitFor(() => expect(AirPodsControlCli.setListeningMode).toHaveBeenCalledOnce());
+      await vi.waitFor(() => expect(PodsControlCli.setListeningMode).toHaveBeenCalledOnce());
       // Then
       await expect(runLockf(lockPath, "0")).resolves.toBe(75);
     } finally {

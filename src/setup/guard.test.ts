@@ -63,7 +63,7 @@ test("shows a copyable failure toast when the action rejects unexpectedly", asyn
   await runWithCliGuard(perform);
   // Then
   expect(mockShowFailureToast).toHaveBeenCalledWith(error, {
-    title: "AirPods command failed",
+    title: "Command failed",
     message: error.message,
     primaryAction: expect.objectContaining({
       title: "Copy Error",

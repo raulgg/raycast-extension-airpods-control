@@ -2,7 +2,7 @@ import { normalizeVersion } from "../cli/version";
 import { CLI_GITHUB_RELEASES_LATEST_URL } from "./constants";
 
 const GITHUB_RELEASES_TIMEOUT_MS = 8000;
-const GITHUB_USER_AGENT = "airpods-control-raycast-extension";
+const GITHUB_USER_AGENT = "pods-control-raycast-extension";
 
 export interface LatestRelease {
   version: string | null;

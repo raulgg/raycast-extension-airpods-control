@@ -1,5 +1,5 @@
 import { conversationAwarenessHud } from "../airpods/presentation";
-import * as AirPodsControlCli from "../cli/client";
+import * as PodsControlCli from "../cli/client";
 import { CliError } from "../cli/errors";
 import { type SubtitleRevision } from "../commands/launch-context";
 import { ToastManager } from "../feedback/toast-manager";
@@ -7,7 +7,7 @@ import { publishConversationAwarenessSubtitle } from "../subtitles/feature-subti
 import { runWithSubtitleOperation, showCliFailure } from "./control-operation";
 import type { ConversationAwarenessState } from "../airpods/types";
 async function publishConfirmedConversationAwareness(error: unknown, revision?: SubtitleRevision): Promise<void> {
-  const state = error instanceof CliError ? AirPodsControlCli.confirmedConversationAwareness(error.payload) : null;
+  const state = error instanceof CliError ? PodsControlCli.confirmedConversationAwareness(error.payload) : null;
   await publishConversationAwarenessSubtitle(state, revision);
 }
 
@@ -21,9 +21,9 @@ export async function runToggleConversationAwarenessCommand(): Promise<void> {
 
   const run = async (revision: SubtitleRevision): Promise<void> => {
     try {
-      const currentState = await AirPodsControlCli.getConversationAwareness();
+      const currentState = await PodsControlCli.getConversationAwareness();
       const nextState: ConversationAwarenessState = currentState === "on" ? "off" : "on";
-      const confirmedState = await AirPodsControlCli.setConversationAwareness(nextState);
+      const confirmedState = await PodsControlCli.setConversationAwareness(nextState);
       await publishConversationAwarenessSubtitle(confirmedState, revision);
       await toast.setToSuccess({ titleOverride: conversationAwarenessHud(confirmedState) });
     } catch (error) {

@@ -75,7 +75,7 @@ const DEVELOPER_TOOLS_DOCS: SetupAction = {
 
 const GITHUB: SetupAction = {
   type: "open",
-  title: "Open AirPods Control on GitHub",
+  title: "Open Pods Control on GitHub",
   url: CLI_REPO_HOME_URL,
   shortcut: Keyboard.Shortcut.Common.OpenWith,
 };
@@ -126,7 +126,7 @@ const SEARCHED_PATHS = CLI_SEARCH_PATHS.map((path) => `\`${path}\``).join(" or "
 const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> = {
   installing: () =>
     screen({
-      title: "Installing AirPods Control CLI…",
+      title: "Installing Pods Control CLI…",
       body: [
         "Homebrew already has an install or update in progress. This can take several minutes. Keep Raycast running until it finishes.",
       ],
@@ -143,16 +143,16 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
     screen({
       title: "Install Apple's developer tools",
       body: [
-        "Apple's developer tools are needed to install the AirPods Control CLI.",
+        "Apple's developer tools are needed to install the Pods Control CLI.",
         `Follow [Apple's official installation instructions](${DEVELOPER_TOOLS_DOCS_URL}).`,
       ],
       actions: [[DEVELOPER_TOOLS_DOCS, GITHUB], [REFRESH]],
     }),
   "invalid-cli-path": (setup) =>
     screen({
-      title: "Fix AirPods Control CLI Path",
+      title: "Fix Pods Control CLI Path",
       body: [
-        "Raycast could not find the AirPods Control CLI at the saved **CLI Path**.",
+        "Raycast could not find the Pods Control CLI at the saved **CLI Path**.",
         code(setup.configuredCliPath ?? ""),
         "Clear or correct it in Extension Preferences.",
       ],
@@ -161,7 +161,7 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
   "needs-link": (setup) => {
     const { cause, command } = LINK_GUIDANCE[linkState(setup)];
     return screen({
-      title: "Finish AirPods Control CLI setup",
+      title: "Finish Pods Control CLI setup",
       body: [
         `Homebrew installed the CLI at ${kegCliLabel(setup)}, but Raycast needs it at ${SEARCHED_PATHS}.`,
         cause,
@@ -174,7 +174,7 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
   },
   "needs-reinstall": (setup) =>
     screen({
-      title: "Repair AirPods Control CLI",
+      title: "Repair Pods Control CLI",
       body: [
         `Homebrew lists the formula, but there is no usable \`${CLI_BINARY_NAME}\` binary at ${kegCliLabel(setup)}. The install is incomplete, so linking cannot fix it.`,
         "Copy the command and run it in Terminal. Homebrew builds from source, so this can take several minutes.",
@@ -188,9 +188,9 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
     }),
   install: () =>
     screen({
-      title: "Install AirPods Control CLI",
+      title: "Install Pods Control CLI",
       body: [
-        "The AirPods Control CLI is not installed. Homebrew and Apple's developer tools are ready.",
+        "The Pods Control CLI is not installed. Homebrew and Apple's developer tools are ready.",
         "Choose **Install with Homebrew**, or copy the install command and run it in Terminal. Homebrew can take several minutes; keep Raycast running until it finishes.",
         `To install from source, follow the [installation instructions](${CLI_INSTALL_DOCS_URL}).`,
       ],
@@ -205,7 +205,7 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
     }),
   update: (setup) =>
     screen({
-      title: "Update AirPods Control CLI",
+      title: "Update Pods Control CLI",
       body: [
         updateFacts(setup),
         firstNote(UPDATE_NOTES, setup),
@@ -224,7 +224,7 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
     }),
   "manual-update": (setup) =>
     screen({
-      title: "Update AirPods Control CLI",
+      title: "Update Pods Control CLI",
       body: [
         updateFacts(setup),
         firstNote(UPDATE_NOTES, setup),
@@ -240,7 +240,7 @@ const SETUP_SCREENS: Record<SetupScreenKind, (setup: CliSetup) => SetupScreen> =
     }),
   "up-to-date": (setup) =>
     screen({
-      title: "AirPods Control CLI is up to date",
+      title: "Pods Control CLI is up to date",
       body: [installedFacts(setup), firstNote(STATUS_NOTES, setup), minimumVersionNote(setup)],
       actions: [[GITHUB]],
     }),
@@ -252,7 +252,7 @@ const LIFECYCLE_SCREENS: {
   [S in CliSetupLifecycle["status"]]: (lifecycle: Extract<CliSetupLifecycle, { status: S }>) => SetupScreen;
 } = {
   checking: () =>
-    screen({ title: "AirPods Control CLI", body: ["Checking your installation…"], actions: [], isLoading: true }),
+    screen({ title: "Pods Control CLI", body: ["Checking your installation…"], actions: [], isLoading: true }),
   ready: ({ setup }) => setupScreen(setup),
   running: ({ operation }) =>
     screen({
@@ -263,7 +263,7 @@ const LIFECYCLE_SCREENS: {
     }),
   failed: ({ error }) =>
     screen({
-      title: "AirPods Control CLI needs attention",
+      title: "Pods Control CLI needs attention",
       body: [indent(error)],
       actions: [[{ type: "copy", title: "Copy Error", content: error }], [INSTALL_DOCS, GITHUB], [REFRESH]],
     }),
