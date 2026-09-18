@@ -1,11 +1,11 @@
-import { conversationAwarenessHud } from "../airpods/presentation";
 import * as PodsControlCli from "../cli/client";
 import { CliError } from "../cli/errors";
 import { type SubtitleRevision } from "../commands/launch-context";
+import { conversationAwarenessHud } from "../features/presentation";
 import { ToastManager } from "../feedback/toast-manager";
 import { publishConversationAwarenessSubtitle } from "../subtitles/feature-subtitles";
 import { runWithSubtitleOperation, showCliFailure } from "./control-operation";
-import type { ConversationAwarenessState } from "../airpods/types";
+import type { ConversationAwarenessState } from "../features/types";
 async function publishConfirmedConversationAwareness(error: unknown, revision?: SubtitleRevision): Promise<void> {
   const state = error instanceof CliError ? PodsControlCli.confirmedConversationAwareness(error.payload) : null;
   await publishConversationAwarenessSubtitle(state, revision);

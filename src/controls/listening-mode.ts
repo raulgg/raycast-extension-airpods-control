@@ -1,14 +1,14 @@
 import { getPreferenceValues, openCommandPreferences } from "@raycast/api";
-import { LISTENING_MODE_PRESENTATION, listeningModeHud } from "../airpods/presentation";
 import * as PodsControlCli from "../cli/client";
 import { CliError } from "../cli/errors";
 import { type SubtitleRevision } from "../commands/launch-context";
+import { LISTENING_MODE_PRESENTATION, listeningModeHud } from "../features/presentation";
 import { ToastManager } from "../feedback/toast-manager";
 import { publishListeningModeSubtitle } from "../subtitles/feature-subtitles";
 import { runWithSubtitleOperation, showCliFailure } from "./control-operation";
 import { CYCLE_MODE_ORDER } from "./preferences";
 import type { CycleCommandPreferences } from "./preferences";
-import type { ListeningModes } from "../airpods/types";
+import type { ListeningModes } from "../features/types";
 interface SetListeningModeCommandOptions {
   updateCycleSubtitle: boolean;
 }

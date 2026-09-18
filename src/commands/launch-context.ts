@@ -1,4 +1,4 @@
-import type { ListeningModes, ConversationAwarenessState } from "../airpods/types";
+import type { ListeningModes, ConversationAwarenessState } from "../features/types";
 
 export type SubtitleRevision = string;
 

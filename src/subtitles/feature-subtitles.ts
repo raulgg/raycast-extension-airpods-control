@@ -1,8 +1,8 @@
-import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../airpods/presentation";
 import * as PodsControlCli from "../cli/client";
 import { type SubtitleRevision } from "../commands/launch-context";
+import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../features/presentation";
 import { publishCommandSubtitle, resetCommandSubtitle, withSubtitleOperation } from "../subtitles/coordination";
-import type { ConversationAwarenessState, ListeningModes } from "../airpods/types";
+import type { ConversationAwarenessState, ListeningModes } from "../features/types";
 
 async function refreshCommandSubtitle<State>(
   readState: () => Promise<State>,

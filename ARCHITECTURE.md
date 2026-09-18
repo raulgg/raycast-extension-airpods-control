@@ -19,7 +19,7 @@ Pods Control has eight Raycast command entrypoints in `src/`. Keep those filenam
 | Understand setup detection or installation         | `src/setup/detection.ts`, `developer-tools.ts`, `latest-release.ts`, `installation.ts`                   |
 | Understand the pre-command CLI check               | `src/setup/guard.ts`, `navigation.ts`                                                                    |
 | Understand Homebrew termination and locking        | `src/homebrew/commands.ts`, `lock.ts`, `process-lifetime.ts`                                             |
-| Change state labels or symbols                     | `src/airpods/presentation.ts`                                                                            |
+| Change state labels or symbols                     | `src/features/presentation.ts`                                                                           |
 | Change control toasts or error actions             | `src/feedback/`                                                                                          |
 
 ## Module map
@@ -48,7 +48,7 @@ flowchart TD
   Controls --> Feedback[feedback: toast lifecycle and error actions]
   Status --> Feedback
   Setup --> Feedback
-  Controls --> Domain[airpods: state types and formatting]
+  Controls --> Domain[features: control types and formatting]
   Status --> Domain
   Subtitles --> Domain
   Client --> Domain
@@ -61,8 +61,8 @@ Raycast metadata updates apply in the executing command's context. Fixed-mode co
 ESLint enforces these boundaries for production code. Keep `eslint.config.js` in sync with this list.
 
 - Entrypoints route user and background launches. They may depend on feature modules; feature modules never import entrypoints.
-- `commands/` owns command identifiers and launch payload validation. It depends only on `airpods/`.
-- `airpods/` holds state types and formatting with no Raycast or Node dependencies.
+- `commands/` owns command identifiers and launch payload validation. It depends only on `features/`.
+- `features/` holds the tokens and labels for the user-facing controls on the connected device (listening mode and Conversation Awareness). It has no Raycast or Node dependencies.
 - `cli/` owns the external CLI contract and execution. It never imports setup, controls, status, subtitles, or feedback.
 - `subtitles/` reads state through the CLI client and publishes metadata. It never imports controls or status.
 - `controls/` and `status/` coordinate their own workflows and talk to each other only through Raycast launches.

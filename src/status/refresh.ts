@@ -1,17 +1,17 @@
 import { launchCommand, LaunchType, showToast, Toast } from "@raycast/api";
-import { formatStatusSubtitle } from "../airpods/presentation";
 import * as PodsControlCli from "../cli/client";
 import { type SubtitleRevision } from "../commands/launch-context";
 import { CYCLE_LISTENING_MODE_COMMAND_NAME, TOGGLE_CONVERSATION_AWARENESS_COMMAND_NAME } from "../commands/names";
+import { formatStatusSubtitle } from "../features/presentation";
 import { publishCommandSubtitle, resetCommandSubtitle, withSubtitleSnapshotOperation } from "../subtitles/coordination";
 import { finishToast } from "./feedback";
 import { totalReadFailureIncludes, type StatusRefreshResult } from "./result";
 import type { SubtitleDispatchResult } from "./result";
-import type { StatusSnapshot, ConversationAwarenessState, ListeningModes } from "../airpods/types";
 import type {
   ConversationAwarenessSubtitleRefreshContext,
   ListeningModeSubtitleRefreshContext,
 } from "../commands/launch-context";
+import type { StatusSnapshot, ConversationAwarenessState, ListeningModes } from "../features/types";
 
 async function dispatchSubtitleRefreshes(
   mode: ListeningModes | null,

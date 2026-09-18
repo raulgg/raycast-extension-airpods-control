@@ -1,4 +1,4 @@
-import type { ListeningModes } from "../airpods/types";
+import type { ListeningModes } from "../features/types";
 
 export interface CycleCommandPreferences {
   cycleOff: boolean;

@@ -1,5 +1,5 @@
 import { Toast } from "@raycast/api";
-import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../airpods/presentation";
+import { conversationAwarenessSubtitle, listeningModeSubtitle } from "../features/presentation";
 import { createCopyErrorAction, getErrorMessage } from "../feedback/error-actions";
 import { totalReadFailureIncludes, type StatusRefreshResult } from "./result";
 

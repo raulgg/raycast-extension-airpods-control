@@ -6,12 +6,12 @@ import importX from "eslint-plugin-import-x";
 
 // Keep these folder dependencies in sync with ARCHITECTURE.md.
 const dependencies = {
-  airpods: [],
-  commands: ["airpods"],
-  cli: ["airpods"],
-  controls: ["airpods", "cli", "commands", "feedback", "setup", "subtitles"],
-  status: ["airpods", "cli", "commands", "feedback", "subtitles"],
-  subtitles: ["airpods", "cli", "commands"],
+  features: [],
+  commands: ["features"],
+  cli: ["features"],
+  controls: ["features", "cli", "commands", "feedback", "setup", "subtitles"],
+  status: ["features", "cli", "commands", "feedback", "subtitles"],
+  subtitles: ["features", "cli", "commands"],
   setup: ["cli", "commands", "feedback", "homebrew"],
   homebrew: [],
   feedback: [],
@@ -100,7 +100,7 @@ export default defineConfig([
   ...folders.map((folder) => ({
     files: [`src/${folder}/**/*.{ts,tsx}`],
     ignores: productionIgnores,
-    rules: { "no-restricted-imports": restrictedImports(folder, folder === "airpods" || folder === "commands") },
+    rules: { "no-restricted-imports": restrictedImports(folder, folder === "features" || folder === "commands") },
   })),
   {
     files: ["src/cli/{client,errors,protocol,preferences,types}.ts"],

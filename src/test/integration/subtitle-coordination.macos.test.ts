@@ -19,7 +19,7 @@ import toggleConversationAwareness from "../../toggle-conversation-awareness";
 import { expectConsoleError } from "../console";
 import { deferred } from "../fixtures/deferred";
 import { createSupportDirectory } from "../fixtures/support-directory";
-import type { ListeningModes } from "../../airpods/types";
+import type { ListeningModes } from "../../features/types";
 
 vi.mock("../../cli/client", async (importOriginal) => ({
   ...(await importOriginal<typeof PodsControlCli>()),

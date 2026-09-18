@@ -1,5 +1,5 @@
 import { CliError } from "../cli/errors";
-import type { ConversationAwarenessState, ListeningModes } from "../airpods/types";
+import type { ConversationAwarenessState, ListeningModes } from "../features/types";
 export interface SubtitleDispatchResult {
   listeningMode: PromiseSettledResult<void>;
   conversationAwareness: PromiseSettledResult<void>;
